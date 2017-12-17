@@ -1,0 +1,2 @@
+gaoJ -- 2017-12-16 22:27
+Created design document and outlined the different components
