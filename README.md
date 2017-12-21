@@ -1,2 +1,3 @@
-# Chillin-in-the-Front-Seats
-Final Project: Drawnet
+# Drawnet
+Jenny Gao, Kevin Li, William Soe, Max Zlotskiy
+
