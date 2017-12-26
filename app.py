@@ -5,14 +5,13 @@ import utils.users as users
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
+
 def loggedIn():
     return "username" in session
 
-
-
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', loggedin=loggedIn())
 
 #This is the page users see. It asks for username and password.
 @app.route('/account/login')
@@ -77,15 +76,12 @@ def joinRedirect():
     return redirect(url_for('join'))   """
 
 @app.route('/account/profile')
-@app.route('/account/')
-@app.route('/account')
 def profile_route():
     if loggedIn():
-        return "<h1>Welcome " + session["username"] + ". This is your profile page :)</h1>"
+        return render_template("profile.html", username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
-@app.route('/logout')
 @app.route('/account/logout')
 def logout():
     if loggedIn():
