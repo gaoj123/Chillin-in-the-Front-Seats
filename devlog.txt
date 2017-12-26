@@ -1,2 +1,8 @@
 gaoJ -- 2017-12-16 22:27
 Created design document and outlined the different components
+
+gaoJ -- 2017-12-25 22:10
+Started login and create account in app.py and created base.html, join.html, login.html, and home.html
+
+gaoJ -- 2017-12-26 09:26
+Fixed how nav bar appears for a user who is logged in and fixed the routes in app.py
