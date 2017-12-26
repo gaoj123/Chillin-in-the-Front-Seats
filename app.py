@@ -5,10 +5,12 @@ import utils.users as users
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
-
+#Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
 
+
+#The home page displays useful information about our website. Accessible regardless of login status.
 @app.route('/')
 def home():
     return render_template('home.html', loggedin=loggedIn())
@@ -58,23 +60,8 @@ def joinRedirect():
         users.add_new_user(uname, pword, pfp_url)
         flash('The account "' + uname + '" has been created. Please login to confirm.')
         return redirect(url_for("login_page"))
-    """
-    db = sqlite3.connect("data/ourDB.db") #opens ourDB.db
-    print users.get_users()
-    print [request.form['user']]
-    if (request.form['user'],) in users.get_users():
-        flash("Username already taken")
-    elif request.form['password'] == request.form['passwordConfirm']:
-        users.add_new_user(db, request.form['user'], request.form['password'], request.form['name'])
-        db.commit()
-        db.close()
-        session['user'] = request.form['user']
-        return redirect(url_for('home'))
-    else:
-        flash("Passwords do not match")
-    db.close()
-    return redirect(url_for('join'))   """
 
+#This is the profile page
 @app.route('/account/profile')
 def profile_route():
     if loggedIn():
