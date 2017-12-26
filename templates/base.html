@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+  <head>
+    <title>{% block title %} TITLE {% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation-float.min.css" integrity="sha256-TPcVVrzfTETpAWQ8HhBHIMT7+DbszMr5n3eFi+UwIl8=" crossorigin="anonymous" / >
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename="stylesheet.css")}}">
+  </head>
+  <body {% block background %}
+	style="height: 100%; background-image: 
+	       url({{url_for('static', filename='covered.jpg')}})"
+	{% endblock %}>
+
+
+
+    <!-- TOP BAR =================================== -->
+
+    <div class="top-bar" style="background-color: #003049">
+      <div class="top-bar-right">
+	<ul class="menu vertical medium-horizontal"
+	    style="background-color: #003049">
+	  <li><a style="color: white" href="/">Home</a></li>
+	  {% if loggedin %}
+	  <li><a style="color: white" href="/profile">Profile</a></li>
+	  <li><a style="color: white" href="/logout">Logout</a></li>
+	  {% else %}
+	  <li><a style="color: white" href="/login">Login</a></li>
+	  {% endif %}
+      </div>
+      </ul>
+    </div>
+</div>
+
+{% block body %}
+CONTENT
+{% endblock %}
+
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

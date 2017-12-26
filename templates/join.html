@@ -1,0 +1,33 @@
+{% extends "form.html" %}
+{% set title = "Create an account" %}
+{% block content1 %}
+
+<h2>
+  Create your account
+</h2>
+
+<br>
+{% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+        <font color="red">{{ message }}</font><br>
+        {% endfor %}
+      {% endif %}
+{% endwith %}
+
+<form method="POST" action="/joinRedirect">
+
+	
+  Username: <input type="text" name="user">
+	<br>
+  Full name: <input type="text" name="name">
+  <br>
+	Password: <input type="password" name="password">
+	<br>
+  Retype password: <input type="password" name="passwordConfirm">
+  <br>
+  <input type="submit" name="form" value="submit">
+
+</form>
+
+{% endblock %}

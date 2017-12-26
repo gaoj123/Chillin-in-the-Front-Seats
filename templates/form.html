@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+  </head>
+  <body>
+    {% block content1 %}
+    Welcome to the main page 
+    <br>
+
+    <form method="POST" action="/login">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+        <font color="red">{{ message }}</font><br>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+      Username: <input type="text" name="user">
+      <br>
+      Password: <input type="password" name="password">
+      <br>
+      <input type="submit" name="form" value="Submit">
+    </form>
+    <br>
+
+    <form action="/join">
+      <input type="submit" value="Create an account"/>
+    </form>
+
+    {% endblock %}
+  </body>
+</html>
