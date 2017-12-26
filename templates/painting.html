@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <title>Paint Something</title>
+    <!-- temporary styling -->
+    <style type="text/css">
+      canvas {
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <div id="button-panel">
+      <!-- maybe add some divs here that control the color of the brush,
+           and each div is the background color which it will change the brush tp -->
+    </div>
+    <script type="text/javascript">
+      //Important Variables
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+      var mousedown = false;
+      //Event Listeners
+      canvas.addEventListener("mousemove", function(event) {
+        if(mousedown == true) {
+          var x1 = event.offsetX, y1 = event.offsetY;
+          var x0 = x1 - 2 * event.movementX, y0 = y1 - 2 * event.movementY;
+          console.log(event.button, event.buttons);
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
+          ctx.stroke();
+        }
+      });
+      canvas.addEventListener("mousedown", function(event) {
+        mousedown = true;
+      })
+      canvas.addEventListener("mouseup", function(event) {
+        mousedown = false;
+      })
+      //Useful functions
+      var startOver = function() {
+        ctx.clearRect();
+      }
+      var changeThickness = function(t) {
+        ctx.lineWidth = t;
+        return t;
+      }
+      var changeColor = function(c) {
+        ctx.strokeStyle = c;
+        return c;
+      }
+      var getImage = function() {
+        return canvas.toDataURL("image/png");
+      }
+      var setBackground = function(color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } 
+      //Setup
+      changeColor("#000");
+      changeThickness(5);
+      console.log(getImage());
+    </script> 
+  </body>
+</html>
