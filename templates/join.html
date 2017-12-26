@@ -1,5 +1,5 @@
-{% extends "form.html" %}
-{% set title = "Create an account" %}
+<html>
+<body>
 {% block content1 %}
 
 <h2>
@@ -15,19 +15,21 @@
       {% endif %}
 {% endwith %}
 
-<form method="POST" action="/joinRedirect">
+<form method="POST" action="/account/create/post">
 
 	
-  Username: <input type="text" name="user">
+  Username: <input type="text" name="username">
 	<br>
-  Full name: <input type="text" name="name">
+  URL to profile picture image: <input type="text" name="pfp">
   <br>
 	Password: <input type="password" name="password">
 	<br>
   Retype password: <input type="password" name="passwordConfirm">
   <br>
-  <input type="submit" name="form" value="submit">
+  <input type="submit" name="form" value="Submit">
 
 </form>
 
 {% endblock %}
+</body>
+</html>
