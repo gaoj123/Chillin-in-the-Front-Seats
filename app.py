@@ -2,47 +2,64 @@ from flask import Flask, flash, render_template, request, session, redirect, url
 import sqlite3
 import utils.users as users
 
+
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
+def loggedIn():
+    return "username" in session
+
+
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
-@app.route('/login', methods=['POST','GET'])
-def login():
-    if request.method=="POST":
-        db = sqlite3.connect("data/ourDB.db") #opens ourDB.db
-        c = db.cursor() #opens a cursor object
-        #print request.form['user']
-        user = request.form['user']
-        print user
-        command = "SELECT password FROM users WHERE username='%s';"%(user)
-        print command
-        c.execute(command)
-        credentials = c.fetchall()
-        print credentials
-        db.close()
-        print users.validate_login(user, request.form["password"])
-        if credentials:
-            password = credentials[0][0]
-            if request.form['password'] == password:
-                session['user'] = request.form['user']
-                return redirect(url_for('home'))
-            else:
-                flash("Sorry, wrong password and/or username")
-        else:
-            flash("User not found")
-            return redirect(url_for('home'))
+#This is the page users see. It asks for username and password.
+@app.route('/account/login')
+def login_page():
+    if loggedIn():
+        return redirect(url_for("profile_route"))
     else:
-        return render_template("form.html")
+        return render_template("login.html")
 
-@app.route('/join')
+#This is where the login form leads. On succesful login -> profile page. Otherwise back to /account/login
+@app.route('/account/login/post', methods=['POST'])
+def login_logic():
+    uname = request.form.get("username", "")
+    pword = request.form.get("password", "")
+    if users.validate_login(uname, pword):
+        session["username"] = uname
+        return redirect(url_for("profile_route"))
+    else:
+        flash("Wrong username or password.")
+        return redirect(url_for("login_logic"))
+
+#This si the page users see when making an account. Asks for username, password & confirm, and a link to a profile picture.
+@app.route('/account/create')
 def join():
-    return render_template("form.html")
+    if not loggedIn():
+        return render_template("join.html")
+    else:
+        return redirect(url_for("profile_route"))
 
-@app.route('/joinRedirect', methods=['POST','GET'])
+#This is where the create account form leads. Not done yet.
+@app.route('/account/create/post', methods=['POST'])
 def joinRedirect():
+    uname = request.form.get("username", "")
+    pword = request.form.get("password", "")
+    pass2 = request.form.get("passwordConfirm", "")
+    pfp_url = request.form.get("pfp", "")
+    if users.user_exists(uname):
+        flash("This account name has already been taken, so please choose another.")
+        return redirect(url_for("join"))
+    elif pword != pass2:
+        flash("Make sure you retype your password the same way in both boxes.")
+        return redirect(url_for("join"))
+    else:
+        users.add_new_user(uname, pword, pfp_url)
+        flash('The account "' + uname + '" has been created. Please login to confirm.')
+        return redirect(url_for("login_page"))
+    """
     db = sqlite3.connect("data/ourDB.db") #opens ourDB.db
     print users.get_users()
     print [request.form['user']]
@@ -57,12 +74,22 @@ def joinRedirect():
     else:
         flash("Passwords do not match")
     db.close()
-    return redirect(url_for('join'))   
+    return redirect(url_for('join'))   """
+
+@app.route('/account/profile')
+@app.route('/account/')
+@app.route('/account')
+def profile_route():
+    if loggedIn():
+        return "<h1>Welcome " + session["username"] + ". This is your profile page :)</h1>"
+    else:
+        return redirect(url_for("login_page"))
 
 @app.route('/logout')
+@app.route('/account/logout')
 def logout():
-    if 'user' in session:
-        session.pop('user')
+    if loggedIn():
+        session.pop('username')
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
