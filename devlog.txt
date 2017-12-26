@@ -4,5 +4,11 @@ Created design document and outlined the different components
 gaoJ -- 2017-12-25 22:10
 Started login and create account in app.py and created base.html, join.html, login.html, and home.html
 
+zlotskiyM -- 2017-12-25 23:50
+Updated legacy code to match this project's needs. Created the users table in the database, methods for adding users, and made the routes match the design doc for login and account creation.
+
 gaoJ -- 2017-12-26 09:26
 Fixed how nav bar appears for a user who is logged in and fixed the routes in app.py
+
+zlotskiyM -- 2017-12-26 11:25
+Wrote the prototype of the painting feature. You can make black squiggles appear by holding down the mouse.
