@@ -12,3 +12,6 @@ Fixed how nav bar appears for a user who is logged in and fixed the routes in ap
 
 zlotskiyM -- 2017-12-26 11:25
 Wrote the prototype of the painting feature. You can make black squiggles appear by holding down the mouse.
+
+soeW -- 2017-12-28 14:53
+Added Clarifai library and api access/methods file into utils. There is a current bug where python won't install the clarifai rest module, but the documentation specifies to install the rest module.
