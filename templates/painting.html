@@ -9,17 +9,28 @@
     </style>
   </head>
   <body>
+    <div id="header">
+      <h1>{{ word }}</h1>
+    </div>
+    <!-- The dimensions of the canvas must be set explicitly, can't use %, otherwise it will look blurry and not work -->
     <canvas id="canvas" width="600" height="400"></canvas>
     <div id="button-panel">
       <!-- maybe add some divs here that control the color of the brush,
            and each div is the background color which it will change the brush tp -->
     </div>
+    <form action="/draw/submit" method="POST" id="done">
+      <input type="hidden" name="word" value="{{ word }}">
+      <input type="submit" value="Submit Drawing">
+      <!-- When the button is pressed, JS will use ninja powers to attach an <input type=hidden>
+           to the form. It will be called "image" and contain canvas data as a string -->
+    </form>
     <script type="text/javascript">
-      //Important Variables
+      //Important Variables~~~~~~~~~~~~~~~~~~~~~~~~~
       var canvas = document.getElementById("canvas");
+      var form = document.getElementById("done");
       var ctx = canvas.getContext("2d");
       var mousedown = false;
-      //Event Listeners
+      //Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       canvas.addEventListener("mousemove", function(event) {
         if(mousedown == true) {
           var x1 = event.offsetX, y1 = event.offsetY;
@@ -33,11 +44,18 @@
       });
       canvas.addEventListener("mousedown", function(event) {
         mousedown = true;
-      })
+      });
       canvas.addEventListener("mouseup", function(event) {
         mousedown = false;
-      })
-      //Useful functions
+      });
+      done.addEventListener("submit", function(event) {
+        var savedImage = document.createElement("input");
+        savedImage.setAttribute("type", "hidden");
+        savedImage.setAttribute("name", "image");
+        savedImage.setAttribute("value", getImage());
+        form.appendChild(savedImage);
+      });
+      //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       var startOver = function() {
         ctx.clearRect();
       }
@@ -56,7 +74,7 @@
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       } 
-      //Setup
+      //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       changeColor("#000");
       changeThickness(5);
       console.log(getImage());
