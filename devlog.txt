@@ -15,3 +15,6 @@ Wrote the prototype of the painting feature. You can make black squiggles appear
 
 soeW -- 2017-12-28 14:53
 Added Clarifai library and api access/methods file into utils. There is a current bug where python won't install the clarifai rest module, but the documentation specifies to install the rest module.
+
+zlotskiyM -- 2017-12-28 19:15
+Wrote accessor and mutator methods for the database in utils/users.py
