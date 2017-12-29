@@ -15,6 +15,7 @@ def create_table():
 def validate_login(uname, pword):
     db = sqlite3.connect(db_name)
     c = db.cursor()
+    username = username.replace("'", "''")
     users = c.execute("SELECT password FROM users WHERE username='%s';" % (uname,)).fetchone()
     db.close()
     if users == None:
@@ -68,11 +69,67 @@ def update_password(user, old_pass, new_pass):
     db.commit()
     db.close()
 
-#Updates a user's fullname to a new one    
-def update_fullname(user, new_name):
+#Updates a user's best/worst score. If this score is between those two values, nothing happens. Score should be an integer 
+#Returns 0 if nothing happened, -1 if new worst score, +1 if new best score (worst is lowest and best is highest)
+def update_score(username, score):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    command = "UPDATE users SET fullname = '%s' WHERE username = '%s';" % (new_name, user)
+    username = username.replace("'", "''")
+    command = "SELECT worst, best FROM users WHERE username = '%s';" % (username,)
+    c.execute(command)
+    scores = c.fetchone()
+    score = int(score)
+    status = 0
+    if scores != None:
+        if score < scores[0]:
+            command = "UPDATE users SET worst = %d WHERE username = '%s';" % (score, username)
+            status = -1
+        elif score > scores[1]:
+            command = "UPDATE users SET best = %d WHERE username = '%s';" % (score, username)
+            status = 1
+        c.execute(command)
+        db.commit()
+    db.close()
+    return status
+
+#username and image must both be strings
+def update_best_img(username, image):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    username = username.replace("'", "''")
+    command = "UPDATE users SET best_img = '%s' WHERE username = '%s';" % (image, username)
     c.execute(command)
     db.commit()
     db.close()
+
+#username and image must both be strings
+def update_worst_img(username, image):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    username = username.replace("'", "''")
+    command = "UPDATE users SET worst_img = '%s' WHERE username = '%s';" % (image, username)
+    c.execute(command)
+    db.commit()
+    db.close()
+
+#Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
+def tuple_to_dictionary(tuuple, list_of_keys):
+    d = {} #the dictionary
+    index = 0 #the column index
+    while index < len(tuuple):
+        d[ list_of_keys[index] ] = tuuple[index]
+        index += 1
+    return d
+
+#Returns a dictionary with these keys: username, pfp, best_score, best_image, worst_score, worst_image
+def get_user_stats(username):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    username = username.replace("'", "''")
+    command = "SELECT username, pfp, best, best_img, worst, worst_img FROM users WHERE username = '%s';" % username
+    c.execute(command)
+    user_as_tuple = c.fetchone()
+    db.close()
+    if user_as_tuple != None:
+        return tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_score", "best_image", "worst_score", "worst_image"])
+    return {}
