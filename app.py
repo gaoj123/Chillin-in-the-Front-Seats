@@ -5,6 +5,8 @@ import utils.users as users
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
+NEW_BEST_IMAGE = 1 #users.update_score() return code
+NEW_WORST_IMAGE = -1 #users.update_score() return code
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
