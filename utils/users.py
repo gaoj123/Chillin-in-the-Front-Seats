@@ -8,6 +8,7 @@ def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
     cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_score INTEGER, best_img TEXT, best_word TEXT, worst_score INTEGER, worst_img TEXT, worst_word TEXT);")
+    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, score INTEGER);")
     db.commit()
     db.close()
 
@@ -22,6 +23,7 @@ def validate_login(uname, pword):
         return False
     return users[0] == pword
 
+#Returns True if a username is registered, False otherwise
 def user_exists(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
@@ -33,15 +35,6 @@ def user_exists(username):
         return True 
     else:
         return False
-
-#Returns a list of all usernames.
-def get_users():
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    command = "SELECT username FROM users;"
-    users = c.execute(command).fetchall()
-    db.close()
-    return users
 
 #Adds a new record to the users table. Expects username, password, and a link to their pfp
 def add_new_user(user, pw, pfp):
