@@ -7,7 +7,7 @@ db_name = "data/chillDB.db"
 def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
-    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best INTEGER, best_img TEXT, worst INTEGER, worst_img TEXT);")
+    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_score INTEGER, best_img TEXT, best_word TEXT, worst_score INTEGER, worst_img TEXT, worst_word TEXT);")
     db.commit()
     db.close()
 
@@ -34,6 +34,7 @@ def user_exists(username):
     else:
         return False
 
+#Returns a list of all usernames.
 def get_users():
     db = sqlite3.connect(db_name)
     c = db.cursor()
@@ -42,11 +43,11 @@ def get_users():
     db.close()
     return users
 
-#Adds a new record to the users table    
+#Adds a new record to the users table. Expects username, password, and a link to their pfp
 def add_new_user(user, pw, pfp):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    command = "INSERT INTO users VALUES ('%s', '%s', '%s', 0, '', 0, '');"%(user,pw,pfp)
+    command = "INSERT INTO users VALUES ('%s', '%s', '%s', Null, Null, Null, Null, Null, Null);"%(user,pw,pfp)
     c.execute(command)
     db.commit()
     db.close()
@@ -71,46 +72,30 @@ def update_password(user, old_pass, new_pass):
 
 #Updates a user's best/worst score. If this score is between those two values, nothing happens. Score should be an integer 
 #Returns 0 if nothing happened, -1 if new worst score, +1 if new best score (worst is lowest and best is highest)
-def update_score(username, score):
+def update_score(username, score, image, word):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    command = "SELECT worst, best FROM users WHERE username = '%s';" % (username,)
+    command = "SELECT worst_score, best_score FROM users WHERE username = '%s';" % (username,)
     c.execute(command)
     scores = c.fetchone()
     score = int(score)
     status = 0
-    if scores != None:
-        if score < scores[0]:
-            command = "UPDATE users SET worst = %d WHERE username = '%s';" % (score, username)
-            status = -1
-        elif score > scores[1]:
-            command = "UPDATE users SET best = %d WHERE username = '%s';" % (score, username)
-            status = 1
-        c.execute(command)
-        db.commit()
+    if scores == None or len(scores) < 2 or scores[0] == None:
+        scores = [+1 * 10**6, -1 * 10**6] #unrealistic values so you are guaranteed to pass one of the tests
+    if score < scores[0]:
+        c.execute("UPDATE users SET worst_score = %d WHERE username = '%s';" % (score, username))
+        c.execute("UPDATE users SET worst_img = '%s' WHERE username = '%s';" % (image, username))
+        c.execute("UPDATE users SET worst_word = '%s' WHERE username = '%s';" % (word, username))
+        status = -1
+    elif score > scores[1]:
+        c.execute("UPDATE users SET best_score = %d WHERE username = '%s';" % (score, username))
+        c.execute("UPDATE users SET best_img = '%s' WHERE username = '%s';" % (image, username))
+        c.execute("UPDATE users SET best_word = '%s' WHERE username = '%s';" % (word, username))
+        status = 1
+    db.commit()
     db.close()
     return status
-
-#username and image must both be strings
-def update_best_img(username, image):
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    username = username.replace("'", "''")
-    command = "UPDATE users SET best_img = '%s' WHERE username = '%s';" % (image, username)
-    c.execute(command)
-    db.commit()
-    db.close()
-
-#username and image must both be strings
-def update_worst_img(username, image):
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    username = username.replace("'", "''")
-    command = "UPDATE users SET worst_img = '%s' WHERE username = '%s';" % (image, username)
-    c.execute(command)
-    db.commit()
-    db.close()
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):
@@ -126,10 +111,10 @@ def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    command = "SELECT username, pfp, best, best_img, worst, worst_img FROM users WHERE username = '%s';" % username
+    command = "SELECT username, pfp, best_score, best_img, best_word, worst_score, worst_img, worst_word FROM users WHERE username = '%s';" % username
     c.execute(command)
     user_as_tuple = c.fetchone()
     db.close()
     if user_as_tuple != None:
-        return tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_score", "best_image", "worst_score", "worst_image"])
+        return tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_score", "best_image", "best_word", "worst_score", "worst_image", "worst_word"])
     return {}
