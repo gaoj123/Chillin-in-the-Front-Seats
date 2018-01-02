@@ -15,6 +15,7 @@
     <!-- The dimensions of the canvas must be set explicitly, can't use %, otherwise it will look blurry and not work -->
     <canvas id="canvas" width="600" height="400"></canvas>
     <div id="button-panel">
+      Color: <input type="color" id="myColor">
       <!-- maybe add some divs here that control the color of the brush,
            and each div is the background color which it will change the brush tp -->
     </div>
@@ -30,9 +31,12 @@
       var form = document.getElementById("done");
       var ctx = canvas.getContext("2d");
       var mousedown = false;
+      var color = document.getElementById("myColor").value;
       //Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       canvas.addEventListener("mousemove", function(event) {
         if(mousedown == true) {
+          color = document.getElementById("myColor").value;
+          changeColor(color);
           var x1 = event.offsetX, y1 = event.offsetY;
           var x0 = x1 - 2 * event.movementX, y0 = y1 - 2 * event.movementY;
           console.log(event.button, event.buttons);
@@ -73,11 +77,11 @@
       var setBackground = function(color) {
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } 
+      }
       //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       changeColor("#000");
       changeThickness(5);
       console.log(getImage());
-    </script> 
+    </script>
   </body>
 </html>
