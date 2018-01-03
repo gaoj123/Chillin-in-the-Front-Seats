@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+Choose Word
+{% endblock %}
+
+{% block body %}
+<h1>Choose which one you want to draw</h1>
+{% for word in list %}
+<button type="button" class="btn btn-secondary btn-lg">{{word}}</button>
+{% endfor %}
+{% endblock %}
