@@ -6,6 +6,7 @@ from clarifai import rest
 from clarifai.rest import ClarifaiApp
 from clarifai.rest import Image as C1Image
 import json
+import base64
 
 CLARIFAI_API_KEY = 'THIS_IS_NOT_SECURE'
 
@@ -29,6 +30,12 @@ def predict_path(path_to_file):
     drawing = C1Image(filename = path_to_file)
     response = model.predict(drawing)
     decoded_response = json.loads(response)
+
+########################################################
+
+#Converts base64 encoded image string into a string containing binary data
+def decode(encoded_image_as_string):
+    return base64.decodestring(encoded_image_as_string)
 
 ########################################################
 
