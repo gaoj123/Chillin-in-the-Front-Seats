@@ -24,3 +24,6 @@ Created color palette for pen
 
 gaoJ -- 2018-01-03 14:50
 Added some more html files (choose.html and score.html) and routes to app.py (choose word and canvas)
+
+liK -- 2018-01-03 14:52
+Started working on bootstrap and base.html
