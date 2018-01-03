@@ -7,7 +7,7 @@ db_name = "data/chillDB.db"
 def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
-    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_score INTEGER, best_img TEXT, best_word TEXT, worst_score INTEGER, worst_img TEXT, worst_word TEXT);")
+    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_img_id INTEGER, worst_img_id INTEGER);")
     cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, score INTEGER);")
     db.commit()
     db.close()
@@ -63,6 +63,15 @@ def update_password(user, old_pass, new_pass):
     db.commit()
     db.close()
 
+
+def add_drawing(username, encoded_image, word, score):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    username = username.replace("'", "''")
+    c.execute("INSERT INTO users VALUES (0, '%s', '%s', '%s', %d);" % (username, word, encoded_image, score))
+    db.commit()
+    db.close()
+    
 #Updates a user's best/worst score. If this score is between those two values, nothing happens. Score should be an integer 
 #Returns 0 if nothing happened, -1 if new worst score, +1 if new best score (worst is lowest and best is highest)
 def update_score(username, score, image, word):
