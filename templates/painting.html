@@ -16,6 +16,7 @@
     <canvas id="canvas" width="600" height="400"></canvas>
     <div id="button-panel">
       Color: <input type="color" id="myColor">
+      <a id="clear" href="">Start Over</a>
       <!-- maybe add some divs here that control the color of the brush,
            and each div is the background color which it will change the brush tp -->
     </div>
@@ -29,6 +30,7 @@
       //Important Variables~~~~~~~~~~~~~~~~~~~~~~~~~
       var canvas = document.getElementById("canvas");
       var form = document.getElementById("done");
+      var clearBtn = document.getElementById("clear");
       var ctx = canvas.getContext("2d");
       var mousedown = false;
       var color = document.getElementById("myColor").value;
@@ -59,12 +61,14 @@
         savedImage.setAttribute("value", getImage());
         form.appendChild(savedImage);
       });
+      clearBtn.addEventListener("click", startOver);
       //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       var startOver = function() {
         ctx.clearRect();
       }
       var changeThickness = function(t) {
         ctx.lineWidth = t;
+        ctx.lineCap = "round";
         return t;
       }
       var changeColor = function(c) {
