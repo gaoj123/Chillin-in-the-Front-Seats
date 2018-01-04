@@ -27,3 +27,6 @@ Added some more html files (choose.html and score.html) and routes to app.py (ch
 
 liK -- 2018-01-03 14:52
 Started working on bootstrap and base.html
+
+soeW -- 2018-01-04 14:56
+Added functioning sictionary code to retrieve words to draw
