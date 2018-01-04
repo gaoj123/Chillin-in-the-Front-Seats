@@ -74,7 +74,7 @@ def profile_route():
 #User chooses word to draw
 @app.route('/draw/new')
 def choose():
-     if loggedIn():
+    if loggedIn():
         return render_template("choose.html", username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -82,7 +82,7 @@ def choose():
 #User draws on canvas
 @app.route('/draw/canvas')
 def draw():
-     if loggedIn():
+    if loggedIn():
         return render_template("paint.html", username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
