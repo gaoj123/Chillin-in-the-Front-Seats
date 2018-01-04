@@ -12,13 +12,14 @@ url = 'https://od-api.oxforddictionaries.com/api/v1/domains/en'
 
 r = requests.get(url, headers = {'app_id': app_id, 'app_key': app_key})
 domain_dict = json.loads(r.text)['results']
+
 #Manualing Removing some domains from the dictionary
 removed_domains = ['Alcoholic', 'Amerindian', 'Audio', 'Australian Rules', 'Biblical', 'Buddhism', 'Crime', 'Crystallography', 'First_World_War', 'Gambling', 'Hinduism', 'Islam', 'Judaism', 'Napoleonic_Wars', 'Occult', 'Penal', 'Phonetics', 'Popular_Music', 'Religion', 'Roman_Catholic_Church', 'Second_World_War', 'Sikhism', 'Smoking', 'Theology', 'War_Of_American_Independence', 'Wine', 'English_Civil_War', 'American_Civil_War'] 
 for domain in removed_domains:
     domain_dict.pop(domain, None)
 
 #Create list of topics
-def createWordList():
+def createDomainList():
     domain_choices = []
     times = 5
     while times >0:
@@ -42,6 +43,13 @@ def returnWords(domain):
         word_list.append(word)
         times = times - 1
     return word_list
+
+#How to Make Random Word List
+
+#1. Assign results of createDomainList() to a variable
+#2. Use the domains to let the user pick a topic
+#3. Once user has chosen a topic use returnWords(<their topic>) to return a list of words to choose from to draw
+#4. Return those words to the user
 
 
 
