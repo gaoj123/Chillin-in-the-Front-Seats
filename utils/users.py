@@ -45,7 +45,6 @@ def add_new_user(user, pw, pfp):
     db.commit()
     db.close()
 
-#TODO: make a function that returns image data and use it in this function
 #Returns a dictionary with these keys: username, pfp, best_score, best_image, worst_score, worst_image
 def get_user_stats(username):
     db = sqlite3.connect(db_name)
@@ -56,7 +55,10 @@ def get_user_stats(username):
     user_as_tuple = c.fetchone()
     db.close()
     if user_as_tuple != None:
-        return tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image"])
+        user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image"])
+        user_stats["best_image"] = get_image(user_stats["best_image"])
+        user_stats["worst_image"] = get_image(user_stats["worst_image"])
+        return user_stats
     return {}
 
 #Stores a drawing and its metadata in the database. Score must be an integer. Call update_score_for() after this
@@ -68,6 +70,18 @@ def add_drawing(username, encoded_image, word, score):
     c.execute("INSERT INTO drawings (username, image, word, score) VALUES ('%s', '%s', '%s', %d);" % (username, encoded_image, word, score))
     db.commit()
     db.close()
+
+#Returns a dictionary with the following keys: image (encoded), word (what it is), score (number), artist (user who made it) and id
+def get_image(id):
+    id = int(id)
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    image_stats = c.execute("SELECT image, word, score, username, id FROM drawings WHERE id = %d;" % id).fetchone()
+    db.close()
+    if image_stats == None:
+        return {}
+    else:
+        return tuple_to_dictionary(image_stats, ["image", "word", "score", "artist", "id"])
 
 #Will update the worst and best score in the USERS table.
 def update_scores_for(username):
@@ -102,7 +116,7 @@ def update_password(user, old_pass, new_pass):
     db.close()
 
 #Updates a user's profile picture to a new one. Both parameters should be strings. 
-def update_password(username, pfp):
+def update_pfp(username, pfp):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
@@ -110,6 +124,21 @@ def update_password(username, pfp):
     c.execute(command)
     db.commit()
     db.close()
+
+#Given a word, will return a list of images drawn of that word. Each item will be a dictionary of the form returned by get_image()
+#The results will be sorted by score. The first one will have lowest score, and the last will have the highest.
+def get_images_of(word):
+    word = word.replace("'", "''")
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    images = c.execute("SELECT image, word, score, username, id FROM drawings WHERE word = '%s' ORDER BY score ASC;" % word).fetchall()
+    db.close()
+    index = 0
+    while index < len(images):
+        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id"])
+        index += 1
+    return images
+
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):
