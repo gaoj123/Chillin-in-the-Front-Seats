@@ -28,8 +28,14 @@ Added some more html files (choose.html and score.html) and routes to app.py (ch
 liK -- 2018-01-03 14:52
 Started working on bootstrap and base.html
 
+zlotskiyM -- 2018-01-03 19:12
+Changed database structure: images are now stored independently of user statistics. Wrote tons of new accessor/mutator methods
+
 soeW -- 2018-01-04 14:56
 Added functioning sictionary code to retrieve words to draw
 
 gaoJ -- 2018-01-06 21:10
 Added routes to app.py and html files to allow users to choose topic and word to draw.  Also modified base.html to accomodate painting.html (which now extends "base.html").
+
+zlotskiyM -- 2018-01-06 21:17
+Fixed all the bugs in users.py (database interface). Specifically - users can have null stats, and missing images are replaced by default ones.
