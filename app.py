@@ -2,9 +2,12 @@ from flask import Flask, flash, render_template, request, session, redirect, url
 import sqlite3
 import utils.users as users
 import utils.dict as dict
+import utils.clarifai as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
+NEW_BEST_IMAGE = 1 #users.update_score() return code
+NEW_WORST_IMAGE = -1 #users.update_score() return code
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
@@ -13,7 +16,6 @@ def loggedIn():
 #The home page displays useful information about our website. Accessible regardless of login status.
 @app.route('/')
 def home():
-    print users.get_user_stats("robot")
     return render_template('home.html', loggedin=loggedIn())
 
 #This is the page users see. It asks for username and password.
@@ -92,10 +94,23 @@ def chooseWord():
 @app.route('/draw/canvas')
 def draw():
     if loggedIn():
-        return render_template("painting.html", username=session["username"], loggedin=loggedIn())
+        word=request.args["id"];
+        return render_template("painting.html", username=session["username"], wordChosen=word, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
+#User submits drawing
+#@app.route('/draw/submit')
+#def submitted():
+
+#User sees score for current drawing
+@app.route('/draw/score')
+def score():
+    if loggedIn():
+        #score=clar.;
+        return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
 #Log out
 @app.route('/account/logout')
 def logout():

@@ -1,5 +1,5 @@
-<html>
-  <head>
+{% extends "base.html" %}
+{% block head %}
     <title>Paint Something</title>
     <!-- temporary styling -->
     <style type="text/css">
@@ -7,16 +7,19 @@
         border: 1px solid #000;
       }
     </style>
-  </head>
-  <body>
+</head>
+{% endblock %}
+{% block body %}
+    <input type="hidden" name="id" value="{{wordChosen}}">
     <div id="header">
-      <h1>{{ word }}</h1>
+      <h1>{{ wordChosen }}</h1>
     </div>
     <!-- The dimensions of the canvas must be set explicitly, can't use %, otherwise it will look blurry and not work -->
     <canvas id="canvas" width="600" height="400"></canvas>
+    <br><br>
     <div id="button-panel">
-      Color: <input type="color" id="myColor">
-      <a id="clear" href="">Start Over</a>
+      Color: <input type="color" id="myColor"><br><br>
+      <a id="clear" href="">Start Over</a><br><br>
       <!-- maybe add some divs here that control the color of the brush,
            and each div is the background color which it will change the brush tp -->
     </div>
@@ -87,5 +90,4 @@
       changeThickness(5);
       console.log(getImage());
     </script>
-  </body>
-</html>
+{% endblock %}
