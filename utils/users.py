@@ -50,7 +50,7 @@ def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    command = "SELECT username, pfp, best_image_id, worst_img_id FROM users WHERE username = '%s';" % username
+    command = "SELECT username, pfp, best_img_id, worst_img_id FROM users WHERE username = '%s';" % username
     c.execute(command)
     user_as_tuple = c.fetchone()
     db.close()
