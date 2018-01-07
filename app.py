@@ -5,8 +5,6 @@ import utils.dict as dict
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
-NEW_BEST_IMAGE = 1 #users.update_score() return code
-NEW_WORST_IMAGE = -1 #users.update_score() return code
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
@@ -15,6 +13,7 @@ def loggedIn():
 #The home page displays useful information about our website. Accessible regardless of login status.
 @app.route('/')
 def home():
+    print users.get_user_stats("robot")
     return render_template('home.html', loggedin=loggedIn())
 
 #This is the page users see. It asks for username and password.
