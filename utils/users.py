@@ -73,6 +73,8 @@ def add_drawing(username, encoded_image, word, score):
 
 #Returns a dictionary with the following keys: image (encoded), word (what it is), score (number), artist (user who made it) and id
 def get_image(id):
+    if id == None:
+        return {"image": "/static/missing.png", "word": "", "score": 0, "artist": "", "id": None}
     id = int(id)
     db = sqlite3.connect(db_name)
     c = db.cursor()
