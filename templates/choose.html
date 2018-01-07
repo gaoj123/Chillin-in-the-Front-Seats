@@ -6,7 +6,7 @@ Choose Word
 
 {% block body %}
 <h1>Choose which one you want to draw</h1>
-{% for word in list %}
-<button type="button" class="btn btn-secondary btn-lg">{{word}}</button>
+{% for domain in domains %}
+<button onclick="location.href='/draw/new/domain?id={{domain}}';" id="{{domain}}" type="button" class="btn btn-secondary btn-lg">{{domain}}</button>
 {% endfor %}
 {% endblock %}

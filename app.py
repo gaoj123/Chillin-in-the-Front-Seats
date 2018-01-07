@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-
+import utils.dict as dict
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
@@ -67,23 +67,33 @@ def joinRedirect():
 @app.route('/account/profile')
 def profile_route():
     if loggedIn():
-        return render_template("profile.html", username=session["username"], loggedin=loggedIn())
+        imgLink=users.get_user_stats(session["username"])["pfp"];
+        return render_template("profile.html", img=imgLink,username=session["username"], loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
+
+#User chooses topic to draw
+@app.route('/draw/new')
+def chooseDomain():
+    if loggedIn():
+        return render_template("choose.html", domains=dict.createDomainList(), username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
 #User chooses word to draw
-@app.route('/draw/new')
-def choose():
+@app.route('/draw/new/domain')
+def chooseWord():
     if loggedIn():
-        return render_template("choose.html", username=session["username"], loggedin=loggedIn())
+        domain=request.args["id"];
+        return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
-
+    
 #User draws on canvas
 @app.route('/draw/canvas')
 def draw():
     if loggedIn():
-        return render_template("paint.html", username=session["username"], loggedin=loggedIn())
+        return render_template("painting.html", username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
