@@ -73,22 +73,23 @@ def profile_route():
     else:
         return redirect(url_for("login_page"))
 
-#User chooses topic to draw
+#User chooses word to draw
 @app.route('/draw/new')
 def chooseDomain():
     if loggedIn():
-        return render_template("choose.html", domains=dict.createDomainList(), username=session["username"], loggedin=loggedIn())
+        randomInd=Math.random()*200;
+        return render_template("chooseWord.html", words=wordList[randomInd], username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
 #User chooses word to draw
-@app.route('/draw/new/domain')
-def chooseWord():
-    if loggedIn():
-        domain=request.args["id"];
-        return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
-    else:
-        return redirect(url_for("login_page"))
+#@app.route('/draw/new/domain')
+#def chooseWord():
+    #if loggedIn():
+        #domain=request.args["id"];
+        #return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
+    #else:
+        #return redirect(url_for("login_page"))
     
 #User draws on canvas
 @app.route('/draw/canvas')
