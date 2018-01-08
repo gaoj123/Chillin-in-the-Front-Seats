@@ -6,7 +6,8 @@ import utils.clarifai as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
-wordlist = [] #list of words that will be drawn
+NEW_BEST_IMAGE = 1 #users.update_score() return code
+NEW_WORST_IMAGE = -1 #users.update_score() return code
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
@@ -76,8 +77,8 @@ def profile_route():
 @app.route('/draw/new')
 def chooseDomain():
     if loggedIn():
-        randomInd=Math.random()*200;
-        return render_template("chooseWord.html", words=wordList[randomInd], username=session["username"], loggedin=loggedIn())
+        #randomInd=Math.random()*200;
+        return render_template("chooseWord.html", words=random.choice(wordList), username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
@@ -121,7 +122,3 @@ def logout():
 if __name__ == "__main__":
     app.debug = True
     app.run()
-    wordfile = open("/static/words.txt", "r")
-    wordlist = wordfile.read().split("\n")
-    wordfile.close()
-    
