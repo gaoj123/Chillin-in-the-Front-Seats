@@ -2,7 +2,8 @@ from flask import Flask, flash, render_template, request, session, redirect, url
 import sqlite3
 import utils.users as users
 import utils.dict as dict
-import utils.clarifai as clar
+import random
+#import utils.clarifaiCall as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
@@ -74,10 +75,14 @@ def profile_route():
 
 #User chooses word to draw
 @app.route('/draw/new')
-def chooseDomain():
+def chooseWord():
     if loggedIn():
-        #randomInd=Math.random()*200;
-        return render_template("chooseWord.html", words=random.choice(wordList), username=session["username"], loggedin=loggedIn())
+        wordChoices=[];
+        while len(wordChoices)<5:
+            word=random.choice(wordlist);
+            if word not in wordChoices:
+                wordChoices.append(word)
+        return render_template("chooseWord.html", words=wordChoices, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
