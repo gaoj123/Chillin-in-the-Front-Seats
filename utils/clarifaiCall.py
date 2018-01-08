@@ -1,4 +1,4 @@
-B#IMPORT CLARIFAI LIBRARY USING PIP
+#IMPORT CLARIFAI LIBRARY USING PIP
 #ex. $pip install clarifai
 #Use Latest Version of Python 2.7
 
@@ -8,7 +8,7 @@ from clarifai.rest import Image as C1Image
 import json
 import base64
 
-CLARIFAI_API_KEY = 'THIS_IS_NOT_SECURE'
+CLARIFAI_API_KEY = 'dcb3eee08b16455ba306c31538f3157b'
 
 app = ClarifaiApp(api_key = CLARIFAI_API_KEY)
 
@@ -39,4 +39,4 @@ def decode(encoded_image_as_string):
 
 ########################################################
 
-#print predict_url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/220px-Cow_female_black_white.jpg");
+print predict_url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/220px-Cow_female_black_white.jpg");
