@@ -6,8 +6,7 @@ import utils.clarifai as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
-NEW_BEST_IMAGE = 1 #users.update_score() return code
-NEW_WORST_IMAGE = -1 #users.update_score() return code
+wordlist = [] #list of words that will be drawn
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
@@ -121,3 +120,7 @@ def logout():
 if __name__ == "__main__":
     app.debug = True
     app.run()
+    wordfile = open("/static/words.txt", "r")
+    wordlist = wordfile.read().split("\n")
+    wordfile.close()
+    
