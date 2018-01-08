@@ -85,6 +85,14 @@
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
+      var getColorFromImageData = function(x, y, data) {
+        var start = y * data.width * 4 + x * 4;
+        return data.data.slice(start, start + 4);
+      }
+      var fill = function(cx, cy, color) {
+        var replace = getColorFromCanvas(cx, cy);
+        var area = ctx.getImageData(cx-10, cy-10, 20, 20); 
+      }
       //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       changeColor("#000");
       changeThickness(5);
