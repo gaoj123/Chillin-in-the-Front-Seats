@@ -1,4 +1,4 @@
-#IMPORT CLARIFAI LIBRARY USING PIP
+B#IMPORT CLARIFAI LIBRARY USING PIP
 #ex. $pip install clarifai
 #Use Latest Version of Python 2.7
 
