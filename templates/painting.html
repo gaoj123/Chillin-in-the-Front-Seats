@@ -10,7 +10,6 @@
 </head>
 {% endblock %}
 {% block body %}
-    <input type="hidden" name="id" value="{{wordChosen}}">
     <div id="header">
       <h1>{{ wordChosen }}</h1>
     </div>
@@ -24,7 +23,7 @@
            and each div is the background color which it will change the brush tp -->
     </div>
     <form action="/draw/submit" method="POST" id="done">
-      <input type="hidden" name="word" value="{{ word }}">
+      <input type="hidden" name="id" value="{{wordChosen}}">
       <input type="submit" value="Submit Drawing">
       <!-- When the button is pressed, JS will use ninja powers to attach an <input type=hidden>
            to the form. It will be called "image" and contain canvas data as a string -->
