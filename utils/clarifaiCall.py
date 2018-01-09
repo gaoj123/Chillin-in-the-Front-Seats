@@ -20,17 +20,24 @@ model = app.models.get("general-v1.3")
 #Following two methods return python dictionaries
 
 #predict with Clarifai using a url
-def predict_url(url_to_insert):
-    response = model.predict_by_url(url=url_to_insert)
-    decoded_response = json.loads(response)
-    return decoded_response
+#def predict_url(url_to_insert):
+   # response = model.predict_by_url(url=url_to_insert)
+   # decoded_response = json.loads(response)
+    #return decoded_response
     
 #predict with Clarifai using a local image
-def predict_path(path_to_file):
-    drawing = C1Image(filename = path_to_file)
-    response = model.predict(drawing)
-    decoded_response = json.loads(response)
+#def predict_path(path_to_file):
+   # drawing = C1Image(filename = path_to_file)
+   # response = model.predict(drawing)
+   # decoded_response = json.loads(response)
 
+########################################################
+
+#predict with Clarifai using base64 png
+def predict_base64(bits):
+    response = app.predict_by_base64(bits)
+    return response
+    
 ########################################################
 
 #Converts base64 encoded image string into a string containing binary data
@@ -39,4 +46,5 @@ def decode(encoded_image_as_string):
 
 ########################################################
 
-print predict_url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/220px-Cow_female_black_white.jpg");
+#print predict_url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/220px-Cow_female_black_white.jpg");
+print predict_by_base64(iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAazklEQVR4nO3dSa8c15km4Pcn5D9g)
