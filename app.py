@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-import utils.dict as dict
+#import utils.dict as dict
 import random
 #import utils.clarifaiCall as clar
 
@@ -109,9 +109,10 @@ def draw():
 #def submitted():
 
 #User sees score for current drawing
-@app.route('/draw/score')
+@app.route('/draw/score', methods=["POST"])
 def score():
     if loggedIn():
+        img=request.form["image"];
         #score=clar.;
         return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
     else:
