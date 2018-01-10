@@ -31,6 +31,9 @@ Started working on bootstrap and base.html
 zlotskiyM -- 2018-01-03 19:12
 Changed database structure: images are now stored independently of user statistics. Wrote tons of new accessor/mutator methods
 
+liK, zlotiskyM -- 2018-01-04 14:52
+Created color options HTML
+
 soeW -- 2018-01-04 14:56
 Added functioning dictionary code to retrieve words to draw
 
@@ -42,4 +45,10 @@ Fixed all the bugs in users.py (database interface). Specifically - users can ha
 
 soeW -- 2018-01-08 01:41
 Fixed Clarifai to be able to make calls to the API now.
+
+liK, gaoJ, zlotskiyM, soeW -- 2018-01-09 14:50
+Working on fixing the Clarifai API
+
+liK, gaoJ, zlotskiyM, soeW -- 2018-01-10 14:50
+Working on fixing the Clarifai API
 
