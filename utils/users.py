@@ -45,7 +45,7 @@ def add_new_user(user, pw, pfp):
     db.commit()
     db.close()
 
-#Returns a dictionary with these keys: username, pfp, best_score, best_image, worst_score, worst_image
+#Returns a dictionary with these keys: username, pfp, best_image, worst_image
 def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
@@ -53,11 +53,13 @@ def get_user_stats(username):
     command = "SELECT username, pfp, best_img_id, worst_img_id FROM users WHERE username = '%s';" % username
     c.execute(command)
     user_as_tuple = c.fetchone()
+    number_drawings = len(c.execute("SELECT id FROM drawings WHERE username = '%s';" % username).fetchall())
     db.close()
     if user_as_tuple != None:
         user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image"])
         user_stats["best_image"] = get_image(user_stats["best_image"])
         user_stats["worst_image"] = get_image(user_stats["worst_image"])
+        user_stats["number_drawings"] = number_drawings
         return user_stats
     return {}
 
@@ -134,6 +136,20 @@ def get_images_of(word):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     images = c.execute("SELECT image, word, score, username, id FROM drawings WHERE word = '%s' ORDER BY score ASC;" % word).fetchall()
+    db.close()
+    index = 0
+    while index < len(images):
+        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id"])
+        index += 1
+    return images
+
+#returns a list of dictionaries, where each dictionary is in the format of get_image(), and they are sorted by score from worst to best
+#All the images are by the user you specify.
+def get_images_by(username):
+    username = username.replace("'", "''")
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    images = c.execute("SELECT image, word, score, username, id FROM drawings WHERE username = '%s' ORDER BY score ASC;" % username).fetchall()
     db.close()
     index = 0
     while index < len(images):

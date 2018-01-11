@@ -68,8 +68,8 @@ def joinRedirect():
 @app.route('/account/profile')
 def profile_route():
     if loggedIn():
-        imgLink=users.get_user_stats(session["username"])["pfp"];
-        return render_template("profile.html", img=imgLink,username=session["username"], loggedin=loggedIn())
+        udict = users.get_user_stats(session["username"]);
+        return render_template("profile.html", pfp=udict["pfp"],username=session["username"], loggedin=loggedIn(), best=udict["best_image"]["image"], worst=udict["worst_image"]["image"], number=udict["number_drawings"])
     else:
         return redirect(url_for("login_page"))
 
