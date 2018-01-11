@@ -8,7 +8,7 @@ from clarifai.rest import Image as C1Image
 import json
 import base64
 
-CLARIFAI_API_KEY = 'e4b9de2b66484695be3f79fed0fa1fd3'
+CLARIFAI_API_KEY = 'NOT_SECURE'
 
 app = ClarifaiApp(api_key = CLARIFAI_API_KEY)
 
