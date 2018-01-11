@@ -113,8 +113,10 @@ def draw():
 def score():
     if loggedIn():
         img=request.form["image"];
-        #score=clar.;
+        #scores=clar.get_results_bits(img);
         word = request.form.get("image", "")
+        #if(word in scores):
+        #    score = scores[word]
         user = session["username"]
         users.add_drawing(user, img, word, 5) #replace 5 with clarifai confidence
         return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
