@@ -39,6 +39,27 @@ def predict_base64(bits):
     response = model.predict_by_base64(bits)
     return response
 
+#Returns a dictionary of guesses clarifai made with associated scores
+def get_results_url(url):
+    response = predict_url(url)
+    guesses = response['outputs'][0]['data']['concepts']
+    guesses_and_scores = {}
+    for entry in guesses:
+        entry_name = entry['name']
+        entry_value = entry['value']
+        guesses_and_scores[entry_name] = entry_value
+    return guesses_and_scores
+            
+def get_results_bits(bits):
+    response = predict_base64(bits)
+    guesses = response['outputs'][0]['data']['concepts']
+    guesses_and_scores = {}
+    for entry in guesses:
+        entry_name = entry['name']
+        entry_value = entry['value']
+        guesses_and_scores[entry_name] = entry_value
+    return guesses_and_scores
+    
 ########################################################
 
 #Converts base64 encoded image string into a string containing binary data
@@ -47,5 +68,5 @@ def decode(encoded_image_as_string):
 
 ########################################################
 
-
+#print get_results_url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Cow_female_black_white.jpg/220px-Cow_female_black_white.jpg")
 
