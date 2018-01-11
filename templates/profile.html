@@ -5,8 +5,12 @@ User Profile
 {% endblock %}
 
 {% block body %}
-<h1>Welcome, {{ username }}</h1>
-<img src="{{img}}">
+<div class="container">
+    <div class="row">
+        <div class="col col-md-4"><img src="{{pfp}}"></div>
+        <div class="col"><h1>Welcome, {{ username }}</h1><h3>You made {{ number }} drawings</h3></div>
+    </div>
+</div>
 <h3>Best Drawing:</h3><br>
 <img src="{{best}}">
 <h3>Worst Drawing:</h3><br>

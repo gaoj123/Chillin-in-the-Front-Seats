@@ -10,7 +10,6 @@
 </head>
 {% endblock %}
 {% block body %}
-    <input type="hidden" name="id" value="{{wordChosen}}">
     <div id="header">
       <h1>{{ wordChosen }}</h1>
     </div>
@@ -23,71 +22,107 @@
       <!-- maybe add some divs here that control the color of the brush,
            and each div is the background color which it will change the brush tp -->
     </div>
-    <form action="/draw/submit" method="POST" id="done">
-      <input type="hidden" name="word" value="{{ word }}">
+    <form action="/draw/score" method="POST" id="done">
+      <input type="hidden" name="id" value="{{wordChosen}}">
       <input type="submit" value="Submit Drawing">
       <!-- When the button is pressed, JS will use ninja powers to attach an <input type=hidden>
            to the form. It will be called "image" and contain canvas data as a string -->
     </form>
-    <script type="text/javascript">
+    <!--<script type="text/javascript" src="../static/painting.js" />-->
+    <script>
       //Important Variables~~~~~~~~~~~~~~~~~~~~~~~~~
-      var canvas = document.getElementById("canvas");
-      var form = document.getElementById("done");
-      var clearBtn = document.getElementById("clear");
-      var ctx = canvas.getContext("2d");
-      var mousedown = false;
-      var color = document.getElementById("myColor").value;
-      //Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      canvas.addEventListener("mousemove", function(event) {
-        if(mousedown == true) {
-          color = document.getElementById("myColor").value;
-          changeColor(color);
-          var x1 = event.offsetX, y1 = event.offsetY;
-          var x0 = x1 - 2 * event.movementX, y0 = y1 - 2 * event.movementY;
-          console.log(event.button, event.buttons);
-          ctx.beginPath();
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
-          ctx.stroke();
-        }
-      });
-      canvas.addEventListener("mousedown", function(event) {
-        mousedown = true;
-      });
-      canvas.addEventListener("mouseup", function(event) {
-        mousedown = false;
-      });
-      done.addEventListener("submit", function(event) {
-        var savedImage = document.createElement("input");
-        savedImage.setAttribute("type", "hidden");
-        savedImage.setAttribute("name", "image");
-        savedImage.setAttribute("value", getImage());
-        form.appendChild(savedImage);
-      });
-      clearBtn.addEventListener("click", startOver);
-      //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      var startOver = function() {
-        ctx.clearRect();
-      }
-      var changeThickness = function(t) {
-        ctx.lineWidth = t;
-        ctx.lineCap = "round";
-        return t;
-      }
-      var changeColor = function(c) {
-        ctx.strokeStyle = c;
-        return c;
-      }
-      var getImage = function() {
-        return canvas.toDataURL("image/png");
-      }
-      var setBackground = function(color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-      //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      changeColor("#000");
-      changeThickness(5);
-      console.log(getImage());
+var canvas = document.getElementById("canvas");
+var form = document.getElementById("done");
+var clearBtn = document.getElementById("clear");
+var ctx = canvas.getContext("2d");
+var mousedown = false;
+var color = document.getElementById("myColor").value;
+//Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+canvas.addEventListener("mousemove", function(event) {
+    if(mousedown == true) {
+	color = document.getElementById("myColor").value;
+	changeColor(color);
+	var x1 = event.offsetX;
+	var y1 = event.offsetY;
+	var x0 = x1 - 2 * Math.max(Math.min(event.movementX, 10), -10);
+	var y0 = y1 - 2 * Math.max(Math.min(event.movementY, 10), -10);
+	console.log(event.button, event.buttons);
+	ctx.beginPath();
+	ctx.moveTo(x0, y0);
+	ctx.lineTo(x1, y1);
+	ctx.stroke();
+    }
+});
+canvas.addEventListener("mousedown", function(event) {
+    mousedown = true;
+});
+canvas.addEventListener("mouseup", function(event) {
+    mousedown = false;
+});
+done.addEventListener("submit", function(event) {
+    var savedImage = document.createElement("input");
+    savedImage.setAttribute("type", "hidden");
+    savedImage.setAttribute("name", "image");
+    savedImage.setAttribute("value", getImage());
+    form.appendChild(savedImage);
+});
+clearBtn.addEventListener("click", startOver);
+//Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var startOver = function() {
+    ctx.clearRect();
+}
+var changeThickness = function(t) {
+    ctx.lineWidth = t;
+    ctx.lineCap = "round";
+    return t;
+}
+var changeColor = function(c) {
+    ctx.strokeStyle = c;
+    return c;
+}
+var getImage = function() {
+    return canvas.toDataURL("image/png");
+}
+var setBackground = function(color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+var getColorFromImageData = function(x, y, data) {
+    var start = y * data.width * 4 + x * 4;
+    return data.data.slice(start, start + 4);
+}
+var setColorInImageData = function(x, y, colorArray, data) {
+    var start = y * data.width * 4 + x * 4;
+    data.data[start] = colorArray[0];
+    data.data[start+1] = colorArray[1];
+    data.data[start+2] = colorArray[2];
+    data.data[start+3] = colorArray[3];
+}
+var sameColor = function(a, b) {
+    for(var i = 0; i < 4; i++) {
+	if(a[i] != b[i]) return false;
+    }
+    return true;
+}
+var fill = function(cx, cy, color) {
+    var areaWidth = 38, areaHeight = 20;
+    var area = ctx.getImageData(cx-areaWidth/2, cy-areaHeight/2, areaWidth, areaHeight);
+    var replace = getColorFromImageData(areaWidth/2, areaWidth/2, area);
+    for(var x = 0; x < areaWidth; x++) {
+        for(var y = 0; y < areaHeight; y++) {
+            //console.log(x+" "+y);
+	    if(sameColor(getColorFromImageData(x, y, area), replace)) {
+		setColorInImageData(x, y, color, area);
+	    }
+	}
+    }
+    ctx.putImageData(area, cx-areaWidth/2, cy-areaHeight/2);
+}
+//Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+changeColor("#000");
+changeThickness(5);
+console.log(getImage());
+fill(50, 50, [0, 0, 0, 255]);
+
     </script>
 {% endblock %}

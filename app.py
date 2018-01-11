@@ -1,13 +1,13 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-import utils.dict as dict
-import utils.clarifai as clar
+#import utils.dict as dict
+import random
+#import utils.clarifaiCall as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
-NEW_BEST_IMAGE = 1 #users.update_score() return code
-NEW_WORST_IMAGE = -1 #users.update_score() return code
+wordlist = []
 #Returns true or false depending on whether an account is logged in.
 def loggedIn():
     return "username" in session
@@ -68,27 +68,32 @@ def joinRedirect():
 @app.route('/account/profile')
 def profile_route():
     if loggedIn():
-        imgLink=users.get_user_stats(session["username"])["pfp"];
-        return render_template("profile.html", img=imgLink,username=session["username"], loggedin=loggedIn())
-    else:
-        return redirect(url_for("login_page"))
-
-#User chooses topic to draw
-@app.route('/draw/new')
-def chooseDomain():
-    if loggedIn():
-        return render_template("choose.html", domains=dict.createDomainList(), username=session["username"], loggedin=loggedIn())
+        udict = users.get_user_stats(session["username"]);
+        return render_template("profile.html", pfp=udict["pfp"],username=session["username"], loggedin=loggedIn(), best=udict["best_image"]["image"], worst=udict["worst_image"]["image"], number=udict["number_drawings"])
     else:
         return redirect(url_for("login_page"))
 
 #User chooses word to draw
-@app.route('/draw/new/domain')
+@app.route('/draw/new')
 def chooseWord():
     if loggedIn():
-        domain=request.args["id"];
-        return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
+        wordChoices=[];
+        while len(wordChoices)<5:
+            word=random.choice(wordlist);
+            if word not in wordChoices:
+                wordChoices.append(word)
+        return render_template("chooseWord.html", words=wordChoices, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
+
+#User chooses word to draw
+#@app.route('/draw/new/domain')
+#def chooseWord():
+    #if loggedIn():
+        #domain=request.args["id"];
+        #return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
+    #else:
+        #return redirect(url_for("login_page"))
     
 #User draws on canvas
 @app.route('/draw/canvas')
@@ -104,9 +109,10 @@ def draw():
 #def submitted():
 
 #User sees score for current drawing
-@app.route('/draw/score')
+@app.route('/draw/score', methods=["POST"])
 def score():
     if loggedIn():
+        img=request.form["image"];
         #score=clar.;
         return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
     else:
@@ -119,5 +125,8 @@ def logout():
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
+    wordfile = open("static/words.txt", "r")
+    wordlist = wordfile.read().split("\n")
+    wordfile.close()
     app.debug = True
     app.run()
