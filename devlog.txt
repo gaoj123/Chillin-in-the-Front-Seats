@@ -52,3 +52,5 @@ Working on fixing the Clarifai API
 liK, gaoJ, zlotskiyM, soeW -- 2018-01-10 14:50
 Working on fixing the Clarifai API
 
+soeW -- 2018-01-11 0:40
+Added a method that will allow the app to retrieve scores of guesses made by API.
