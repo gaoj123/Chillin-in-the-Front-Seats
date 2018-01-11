@@ -114,6 +114,9 @@ def score():
     if loggedIn():
         img=request.form["image"];
         #score=clar.;
+        word = request.form.get("image", "")
+        user = session["username"]
+        users.add_drawing(user, img, word, 5) #replace 5 with clarifai confidence
         return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
