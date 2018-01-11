@@ -4,8 +4,8 @@ import json
 import random
 
 #CHANGE API_KEY AND APP_ID TO "NOT SECURE" BEFORE SENDING TO GITHUB!!
-app_id = 'NOT_SECURE'
-app_key = 'NOT_SECURE'
+app_id = '4cbe4b04'
+app_key = '6f5e6881b6d5f1a5e2fa10f2ee2d149b'
 
 #request for domains
 url = 'https://od-api.oxforddictionaries.com/api/v1/domains/en'
@@ -43,6 +43,8 @@ def returnWords(domain):
         word_list.append(word)
         times = times - 1
     return word_list
+
+print returnWords("Roads")
 
 #How to Make Random Word List
 

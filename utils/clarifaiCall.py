@@ -18,8 +18,9 @@ model = app.models.get("general-v1.3")
 ########################################################
 
 #Following two methods return python dictionaries
-
+#These are deprecated
 #predict with Clarifai using a url
+
 def predict_url(url_to_insert):
     response = model.predict_by_url(url=url_to_insert)
     decoded_response = json.loads(response)
@@ -37,7 +38,7 @@ def predict_url(url_to_insert):
 def predict_base64(bits):
     response = app.predict_by_base64(bits)
     return response
-    
+
 ########################################################
 
 #Converts base64 encoded image string into a string containing binary data
@@ -59,3 +60,4 @@ img1 = "iVBORw0KGgoAAAANSUhEUgAAAlgAAAGQCAYAAAByNR6YAAAgAElEQVR4Xu2dB9Q2VXW2rygi
 #print predict_base64(img2)
 print app
 #print app.predict_by_url("https://upload.wikimedia.org/wikipedia/commons/0/0c/Cow_female_black_white.jpg")
+
