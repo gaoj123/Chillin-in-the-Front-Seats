@@ -17,9 +17,14 @@
     <canvas id="canvas" width="600" height="400"></canvas>
     <br><br>
     <div id="button-panel">
-        Color: <input type="color" id="myColor"> Line Thickness: <input type="range" id="thickness" min="1" max="15" value="5"><br>
-        <a id="clear">Start Over</a><br>
-        <a id="fill">Fill Mode: false</a><br><br>
+        Color: <input type="color" id="myColor"> Line Thickness: <input type="range" id="thickness" min="1" max="20" value="5"><br>
+        <a id="clear">Click me to Start Over</a><br>
+        Select tool:<br>
+        <input type="radio" name="tool" value="brush"> Brush<br>
+        <input type="radio" name="tool" value="fill"> Fill Bucket<br>
+        <input type="radio" name="tool" value="select"> Select color from canvas<br>
+        <input type="radio" name="tool" value="bomb"> Make everything one color<br>
+        <input type="radio" name="tool" value="replace"> Replace the color you click on with the selected color<br>
         <!-- maybe add some divs here that control the color of the brush,
              and each div is the background color which it will change the brush tp -->
     </div>
@@ -36,21 +41,20 @@
     var form = document.getElementById("done");
     var colorPicker = document.getElementById("myColor");
     var clearBtn = document.getElementById("clear");
-    var fillBtn = document.getElementById("fill");
     var thickSlider = document.getElementById("thickness");
+    var modeSelectors = document.getElementsByName("tool");
     var ctx = canvas.getContext("2d");
     var mousedown = false;
-    var fillMode = false;
+    var mode = "brush";
     var canFillAgain = true; //to guard against spam clicking
-    var startOver, changeThickness; //we have to declare them up here for some reason
     //Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     canvas.addEventListener("mousemove", function(event) {
         if(mousedown == true) {
         	var color = colorPicker.value;
-            if(fillMode == false) {
+            var x1 = event.offsetX;
+            var y1 = event.offsetY;
+            if(mode == "brush") {
             	changeColor(color);
-            	var x1 = event.offsetX;
-            	var y1 = event.offsetY;
             	var x0 = x1 - 2 * Math.max(Math.min(event.movementX, 10), -10);
             	var y0 = y1 - 2 * Math.max(Math.min(event.movementY, 10), -10);
             	ctx.beginPath();
@@ -61,9 +65,18 @@
         }
     });
     canvas.addEventListener("click", function(event) {
-        if(fillMode == true && canFillAgain == true) {
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var color = hexColorToArray(colorPicker.value);
+        if(mode == "fill" && canFillAgain == true) {
             canFillAgain = false;
-            fill2(event.offsetX, event.offsetY, hexColorToArray(document.getElementById("myColor").value));
+            fill2(event.offsetX, event.offsetY, color);
+        } else if(mode == "select") {
+            colorPicker.value = changeColor(getHexColorFromCanvas(x, y));
+        } else if(mode == "replace") {
+            replace(ctx.getImageData(x, y, 1, 1).data, color);
+        } else if(mode == "bomb") {
+            setBackground(colorPicker.value);
         }
     });
     canvas.addEventListener("mousedown", function(event) {
@@ -79,18 +92,20 @@
         savedImage.setAttribute("value", getImage());
         form.appendChild(savedImage);
     });
+    var startOver = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
     clearBtn.addEventListener("click", startOver);
-    fillBtn.addEventListener("click", function() {
-        fillMode = !fillMode;
-        fillBtn.innerHTML = "Fill mode: " + fillMode;
-    });
     thickSlider.addEventListener("input", function() {
         changeThickness(this.value);
     });
+    for(var i = 0; i < modeSelectors.length; i++) {
+        modeSelectors[i].addEventListener("change", function() {
+            mode = this.value;
+        });
+    }
     //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    startOver = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
+    
     var changeThickness = function(t) {
         ctx.lineWidth = t;
         ctx.lineCap = "round";
@@ -106,6 +121,14 @@
     var setBackground = function(color) {
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    var getHexColorFromCanvas = function (x, y) {
+        var colorArray = ctx.getImageData(x, y, 1, 1).data;
+        var rgb = [];
+        for(var i = 0; i < 3; i++) {
+            rgb.push(colorArray[i].toString(16).padEnd(2, "0"));
+        }
+        return "#" + rgb.join("");
     }
     var getColorFromImageData = function(x, y, data) {
         var start = y * data.width * 4 + x * 4;
@@ -131,6 +154,17 @@
         arr[2] = parseInt(hexadecimal.substring(5,7), 16);
         arr[3] = 255; //full opacity
         return arr;
+    }
+    var replace = function(colorOld, colorNew) {
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for(var x = 0; x < imageData.width; x++) {
+            for(var y = 0; y < imageData.height; y++) {
+                if(sameColor(getColorFromImageData(x, y, imageData), colorOld)) {
+                    setColorInImageData(x, y, colorNew, imageData);
+                }
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
     }
     var fill2 = function(cx, cy, colorNew) {
         console.log("starting");
