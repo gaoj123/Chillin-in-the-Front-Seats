@@ -17,7 +17,7 @@
     <canvas id="canvas" width="600" height="400"></canvas>
     <br><br>
     <div id="button-panel">
-        Color: <input type="color" id="myColor"><br>
+        Color: <input type="color" id="myColor"> Line Thickness: <input type="range" id="thickness" min="1" max="15" value="5"><br>
         <a id="clear">Start Over</a><br>
         <a id="fill">Fill Mode: false</a><br><br>
         <!-- maybe add some divs here that control the color of the brush,
@@ -34,23 +34,25 @@
       //Important Variables~~~~~~~~~~~~~~~~~~~~~~~~~
     var canvas = document.getElementById("canvas");
     var form = document.getElementById("done");
+    var colorPicker = document.getElementById("myColor");
     var clearBtn = document.getElementById("clear");
     var fillBtn = document.getElementById("fill");
+    var thickSlider = document.getElementById("thickness");
     var ctx = canvas.getContext("2d");
     var mousedown = false;
-    var color = document.getElementById("myColor").value;
     var fillMode = false;
+    var canFillAgain = true; //to guard against spam clicking
+    var startOver, changeThickness; //we have to declare them up here for some reason
     //Event Listeners~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     canvas.addEventListener("mousemove", function(event) {
         if(mousedown == true) {
-        	color = document.getElementById("myColor").value;
+        	var color = colorPicker.value;
             if(fillMode == false) {
             	changeColor(color);
             	var x1 = event.offsetX;
             	var y1 = event.offsetY;
             	var x0 = x1 - 2 * Math.max(Math.min(event.movementX, 10), -10);
             	var y0 = y1 - 2 * Math.max(Math.min(event.movementY, 10), -10);
-            	console.log(event.button, event.buttons);
             	ctx.beginPath();
             	ctx.moveTo(x0, y0);
             	ctx.lineTo(x1, y1);
@@ -59,7 +61,8 @@
         }
     });
     canvas.addEventListener("click", function(event) {
-        if(fillMode == true) {
+        if(fillMode == true && canFillAgain == true) {
+            canFillAgain = false;
             fill2(event.offsetX, event.offsetY, hexColorToArray(document.getElementById("myColor").value));
         }
     });
@@ -76,15 +79,18 @@
         savedImage.setAttribute("value", getImage());
         form.appendChild(savedImage);
     });
-    var startOver = function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
     clearBtn.addEventListener("click", startOver);
     fillBtn.addEventListener("click", function() {
         fillMode = !fillMode;
         fillBtn.innerHTML = "Fill mode: " + fillMode;
     });
+    thickSlider.addEventListener("input", function() {
+        changeThickness(this.value);
+    });
     //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    startOver = function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
     var changeThickness = function(t) {
         ctx.lineWidth = t;
         ctx.lineCap = "round";
@@ -127,25 +133,34 @@
         return arr;
     }
     var fill2 = function(cx, cy, colorNew) {
-        var areaWidth = 50, areaHeight = 50;
+        console.log("starting");
+        var areaWidth = 100, areaHeight = 100;
         var area = ctx.getImageData(cx-areaWidth/2, cy-areaHeight/2, areaWidth, areaHeight);
         var colorOld = getColorFromImageData(areaWidth/2, areaWidth/2, area);
-        fillRecursive(areaWidth / 2, areaHeight / 2, areaWidth, areaHeight, colorNew, colorOld, area, "");
+        if(sameColor(colorOld, colorNew)) {
+            canFillAgain = true;
+            return; //no need to fill the same thing
+        }
+        console.log("approved");
+        var v = fillRecursive(areaWidth / 2, areaHeight / 2, areaWidth, areaHeight, colorNew, colorOld, area, "");
         ctx.putImageData(area, cx-areaWidth/2, cy-areaHeight/2);
+        canFillAgain = true;
+        console.log("done " + v.split(" ").length);
     };
     var fillRecursive = function(x, y, w, h, colorNew, colorOld, area, visitedCoordinates) {
         if(x >= 0 && y >= 0 && x < w && y < h && sameColor(getColorFromImageData(x, y, area), colorOld) == true && visitedCoordinates.indexOf(x + "," + y) == -1) {
             setColorInImageData(x, y, colorNew, area);
             visitedCoordinates += " " + x + "," + y;
-            fillRecursive(x, y-1, w, h, colorNew, colorOld, area, visitedCoordinates); //up
-            fillRecursive(x, y+1, w, h, colorNew, colorOld, area, visitedCoordinates); //down
-            fillRecursive(x+1, y, w, h, colorNew, colorOld, area, visitedCoordinates); //right
-            fillRecursive(x-1, y, w, h, colorNew, colorOld, area, visitedCoordinates); //left
+            visitedCoordinates = fillRecursive(x, y-1, w, h, colorNew, colorOld, area, visitedCoordinates); //up
+            visitedCoordinates = fillRecursive(x, y+1, w, h, colorNew, colorOld, area, visitedCoordinates); //down
+            visitedCoordinates = fillRecursive(x+1, y, w, h, colorNew, colorOld, area, visitedCoordinates); //right
+            visitedCoordinates = fillRecursive(x-1, y, w, h, colorNew, colorOld, area, visitedCoordinates); //left
         }
+        return visitedCoordinates;
     };
     //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     changeColor("#000");
-    changeThickness(5);
+    changeThickness(parseInt(document.getElementById("thickness").value));
     console.log(getImage());
     </script>
 {% endblock %}
