@@ -54,3 +54,6 @@ Working on fixing the Clarifai API
 
 soeW -- 2018-01-11 0:40
 Added a method that will allow the app to retrieve scores of guesses made by API.
+
+zlotskiyM -- 2018-01-15 00:50
+Improved the fill feature in the canvas. Divided functionality into modes/tools that are controlled by radio buttons. Added new features like select color and bomb.
