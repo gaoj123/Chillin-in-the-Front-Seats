@@ -101,6 +101,7 @@
     });
     for(var i = 0; i < modeSelectors.length; i++) {
         modeSelectors[i].addEventListener("change", function() {
+            console.log(getImage());
             mode = this.value;
         });
     }
@@ -195,6 +196,6 @@
     //Setup~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     changeColor("#000");
     changeThickness(parseInt(document.getElementById("thickness").value));
-    console.log(getImage());
+    setBackground("#fff");
     </script>
 {% endblock %}
