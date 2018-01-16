@@ -198,3 +198,32 @@ Owl
 Eagle
 Motorcycle
 Mushroom
+Bread
+Flowers
+Outlet
+House
+Phone
+Plate
+Chair
+Lamp
+Shovel
+Teddy Bear
+Washing Machine
+Clock
+Brocolli
+Carrot
+Apple
+Pineapple
+Grapes
+Banana
+Candle
+Spoon
+Pencil
+Speaker
+Toothpick
+Rubber Duck
+Sailboat
+Book
+Magnet
+Cell Phone
+Twister the Game
