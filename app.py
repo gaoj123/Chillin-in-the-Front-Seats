@@ -94,7 +94,7 @@ def chooseWord():
         #return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
     #else:
         #return redirect(url_for("login_page"))
-    
+
 #User draws on canvas
 @app.route('/draw/canvas')
 def draw():
@@ -119,7 +119,8 @@ def score():
         #    score = scores[word]
         user = session["username"]
         users.add_drawing(user, img, word, 5) #replace 5 with clarifai confidence
-        return render_template("score.html", username=session["username"], confLevel=score, loggedin=loggedIn())
+        users.update_scores_for(user)
+        return render_template("score.html", username=session["username"], confLevel=5, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 #Log out

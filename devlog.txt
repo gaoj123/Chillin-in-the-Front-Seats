@@ -60,3 +60,7 @@ Improved the fill feature in the canvas. Divided functionality into modes/tools 
 
 gaoJ, liK, zlotskiyM, soeW -- 2018-01-16 14:40
 Came up with new plan for how our game works since Clarifai app could not guess images accurately.  Thought over how to implement plan using databases.
+
+liK -- 2018-01-17 16:38
+Fixed navbar and improved formatting for login and create account forms.
+
