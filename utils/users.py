@@ -7,8 +7,9 @@ db_name = "data/chillDB.db"
 def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
-    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_img_id INTEGER, worst_img_id INTEGER);")
-    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, score INTEGER);")
+    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_img_id INTEGER, worst_img_id INTEGER, score INTEGER);")
+    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, guesses TEXT, solved INTEGER);")
+    cursor.execute("CREATE TABLE notifications (recipient TEXT, link TEXT, seen INTEGER);")
     db.commit()
     db.close()
 
@@ -40,7 +41,7 @@ def user_exists(username):
 def add_new_user(user, pw, pfp):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    command = "INSERT INTO users VALUES ('%s', '%s', '%s', Null, Null);"%(user, pw, pfp)
+    command = "INSERT INTO users (username, password, pfp, best_img_id, worst_img_id, score) VALUES ('%s', '%s', '%s', Null, Null, 0);"%(user, pw, pfp)
     c.execute(command)
     db.commit()
     db.close()
@@ -50,42 +51,44 @@ def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    command = "SELECT username, pfp, best_img_id, worst_img_id FROM users WHERE username = '%s';" % username
+    command = "SELECT username, pfp, best_img_id, worst_img_id, score FROM users WHERE username = '%s';" % username
     c.execute(command)
     user_as_tuple = c.fetchone()
     number_drawings = len(c.execute("SELECT id FROM drawings WHERE username = '%s';" % username).fetchall())
     db.close()
     if user_as_tuple != None:
-        user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image"])
+        user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image", "score"])
         user_stats["best_image"] = get_image(user_stats["best_image"])
         user_stats["worst_image"] = get_image(user_stats["worst_image"])
         user_stats["number_drawings"] = number_drawings
         return user_stats
     return {}
 
-#Stores a drawing and its metadata in the database. Score must be an integer. Call update_score_for() after this
-def add_drawing(username, encoded_image, word, score):
+#Stores a drawing and its metadata in the database.
+def add_drawing(username, encoded_image, word):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    score = int(score)
-    c.execute("INSERT INTO drawings (username, image, word, score) VALUES ('%s', '%s', '%s', %d);" % (username, encoded_image, word, score))
+    c.execute("INSERT INTO drawings (username, image, word, guesses, solved) VALUES ('%s', '%s', '%s', '{}', 0);" % (username, encoded_image, word))
     db.commit()
     db.close()
 
-#Returns a dictionary with the following keys: image (encoded), word (what it is), score (number), artist (user who made it) and id
+#Returns a dictionary with the following keys: image (encoded), word (what it is), guesses (dictionary), artist (user who made it), id and solved (boolean)
 def get_image(id):
     if id == None:
         return {"image": "/static/missing.png", "word": "", "score": 0, "artist": "", "id": None}
     id = int(id)
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    image_stats = c.execute("SELECT image, word, score, username, id FROM drawings WHERE id = %d;" % id).fetchone()
+    image_stats = c.execute("SELECT id, username, image, word, guesses, solved FROM drawings WHERE id = %d;" % id).fetchone()
     db.close()
     if image_stats == None:
         return {}
     else:
-        return tuple_to_dictionary(image_stats, ["image", "word", "score", "artist", "id"])
+        image_dict = tuple_to_dictionary(image_stats, ["id", "artist", "image", "word", "guesses", "solved"])
+        image_dict["guesses"] = eval(image_dict["guesses"])
+        image_dict["solved"] = (image_dict["solved"] == 1)
+        return image_dict
 
 #Will update the worst and best score in the USERS table.
 def update_scores_for(username):
@@ -135,11 +138,13 @@ def get_images_of(word):
     word = word.replace("'", "''")
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    images = c.execute("SELECT image, word, score, username, id FROM drawings WHERE word = '%s' ORDER BY score ASC;" % word).fetchall()
+    images = c.execute("SELECT image, word, username, id, guesses, solved FROM drawings WHERE word = '%s' ORDER BY (length(guesses) - length(replace(guesses, ',', '')) + 1) ASC;" % word).fetchall()
     db.close()
     index = 0
     while index < len(images):
-        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id"])
+        images[index] = tuple_to_dictionary(images[index], ["image", "word", "artist", "id", "guesses", "solved"])
+        images[index]["guesses"] = eval(images[index]["guesses"])
+        images[index]["solved"] = (images[index]["solved"] == 1)
         index += 1
     return images
 
@@ -149,11 +154,13 @@ def get_images_by(username):
     username = username.replace("'", "''")
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    images = c.execute("SELECT image, word, score, username, id FROM drawings WHERE username = '%s' ORDER BY score ASC;" % username).fetchall()
+    images = c.execute("SELECT image, word, username, id, guesses, solved FROM drawings WHERE username = '%s' ORDER BY (length(guesses) - length(replace(guesses, ',', '')) + 1) ASC;" % username).fetchall()
     db.close()
     index = 0
     while index < len(images):
-        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id"])
+        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id", "guesses", "id"])
+        images[index]["guesses"] = eval(images[index]["guesses"])
+        images[index]["solved"] = (images[index]["solved"] == 1)
         index += 1
     return images
 
