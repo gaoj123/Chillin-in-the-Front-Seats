@@ -64,3 +64,5 @@ Came up with new plan for how our game works since Clarifai app could not guess 
 liK -- 2018-01-17 16:38
 Fixed navbar and improved formatting for login and create account forms.
 
+gaoJ -- 2018-01-18 14:50
+Added guess route to app.py, created guess.html, and started other routes (notification, guessed, gallery). Also added these routes and html pages to the design doc to reflect the changes regarding how our game works.
