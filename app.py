@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-import utils.drawings as draw
+#import utils.drawings as draw
 
 #import utils.dict as dict
 import random
