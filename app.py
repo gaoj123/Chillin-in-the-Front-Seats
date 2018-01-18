@@ -1,6 +1,8 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
+import utils.drawings as draw
+
 #import utils.dict as dict
 import random
 #import utils.clarifaiCall as clar
@@ -64,6 +66,22 @@ def joinRedirect():
         flash('The account "' + uname + '" has been created. Please login to confirm.')
         return redirect(url_for("login_page"))
 
+#This is the notification page
+#@app.route('/notifications')
+#def notifications():
+
+#This is the gallery page
+#@app.route('/gallery')
+#def gallery():
+
+#This is the guessed drawings page
+#@app.route('/guessed')
+#def guessed():
+
+#User submits drawing
+#@app.route('/draw/submit')
+#def submitted():
+
 #This is the profile page
 @app.route('/account/profile')
 def profile_route():
@@ -73,6 +91,15 @@ def profile_route():
     else:
         return redirect(url_for("login_page"))
 
+#User guesses what others have drawn
+def guess():
+    if loggedIn():
+        user=session["username"]
+        imgList=draw.random_drawings(user)
+        return render_template("guess.html", username=user, loggedin=loggedIn(), images=imgList)
+    else:
+        return redirect(url_for("login_page"))
+    
 #User chooses word to draw
 @app.route('/draw/new')
 def chooseWord():
@@ -103,10 +130,6 @@ def draw():
         return render_template("painting.html", username=session["username"], wordChosen=word, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
-
-#User submits drawing
-#@app.route('/draw/submit')
-#def submitted():
 
 #User sees score for current drawing
 @app.route('/draw/score', methods=["POST"])
