@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}
+{{title }}
+{% endblock %}
+{% block body %}
+<div class="jumbotron">
+  <h1 class="display-4"> Welcome to DrawNet! </h1>
+  <p class="lead">Here goes a short description of our project</p>
+  <hr class="my-4">
+  <p> Get Started! </p>
+  <p class="lead">
+    
+    <div class="container">
+      <div class="row">
+	<div class="col">
+	  <a class="btn btn-outline-success btn-lg float-right" href="/account/login" role="button">Log In</a>
+	</div>
+	<div class = "col">
+	  <a class="btn btn-outline-success btn-lg float-left" href="/account/create" role="button">Create an Account</a>
+	</div>
+	
+    </div>
+    </div>
+    
+  </p>
+  
+</div>
+
+{% endblock %}
