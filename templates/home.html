@@ -7,9 +7,19 @@
   <h1 class="display-4"> Welcome to DrawNet! </h1>
   <p class="lead">Here goes a short description of our project</p>
   <hr class="my-4">
-  <p> Get Started! </p>
   <p class="lead">
-    
+    {% if loggedin %}
+    <p> Play! </p>
+<div class="container">
+      <div class="row">
+	<div class="col">
+	  <a class="btn btn-outline-success btn-lg float-right" href="/draw" role="button">Draw</a>
+	</div>
+	<div class = "col">
+	  <a class="btn btn-outline-success btn-lg float-left" href="/guess" role="button">Guess</a>
+	</div>
+	{% else %}
+	<p> Get Started! </p>
     <div class="container">
       <div class="row">
 	<div class="col">
@@ -18,7 +28,7 @@
 	<div class = "col">
 	  <a class="btn btn-outline-success btn-lg float-left" href="/account/create" role="button">Create an Account</a>
 	</div>
-	
+	{% endif %}
     </div>
     </div>
     
