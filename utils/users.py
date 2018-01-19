@@ -7,9 +7,10 @@ db_name = "data/chillDB.db"
 def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
-    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, best_img_id INTEGER, worst_img_id INTEGER, score INTEGER);")
-    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, guesses TEXT, solved INTEGER);")
-    cursor.execute("CREATE TABLE notifications (recipient TEXT, link TEXT, seen INTEGER);")
+    cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, guesser_score INTEGER, artist_score INTEGER, best_img_id INTEGER, worst_img_id INTEGER);")
+    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, solved INTEGER);")
+    cursor.execute("CREATE TABLE notifications (recipient TEXT, message TEXT, link TEXT, seen INTEGER, timestamp TEXT);")
+    cursor.execute("CREATE TABLE guesses (username TEXT, drawing_id INTEGER, guess TEXT, timestamp TEXT);")
     db.commit()
     db.close()
 
@@ -39,9 +40,11 @@ def user_exists(username):
 
 #Adds a new record to the users table. Expects username, password, and a link to their pfp
 def add_new_user(user, pw, pfp):
+    if pfp == '':
+        pfp = "/static/notfound.png"
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    command = "INSERT INTO users (username, password, pfp, best_img_id, worst_img_id, score) VALUES ('%s', '%s', '%s', Null, Null, 0);"%(user, pw, pfp)
+    command = "INSERT INTO users (username, password, pfp, best_img_id, worst_img_id, guesser_score, artist_score) VALUES ('%s', '%s', '%s', Null, Null, 0, 0);"%(user, pw, pfp)
     c.execute(command)
     db.commit()
     db.close()
@@ -51,13 +54,13 @@ def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    command = "SELECT username, pfp, best_img_id, worst_img_id, score FROM users WHERE username = '%s';" % username
+    command = "SELECT username, pfp, best_img_id, worst_img_id, guesser_score, artist_score FROM users WHERE username = '%s';" % username
     c.execute(command)
     user_as_tuple = c.fetchone()
     number_drawings = len(c.execute("SELECT id FROM drawings WHERE username = '%s';" % username).fetchall())
     db.close()
     if user_as_tuple != None:
-        user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image", "score"])
+        user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image", "guesser_score", "artist_score"])
         user_stats["best_image"] = get_image(user_stats["best_image"])
         user_stats["worst_image"] = get_image(user_stats["worst_image"])
         user_stats["number_drawings"] = number_drawings
@@ -69,7 +72,7 @@ def add_drawing(username, encoded_image, word):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    c.execute("INSERT INTO drawings (username, image, word, guesses, solved) VALUES ('%s', '%s', '%s', '{}', 0);" % (username, encoded_image, word))
+    c.execute("INSERT INTO drawings (username, image, word, solved) VALUES ('%s', '%s', '%s', 0);" % (username, encoded_image, word))
     db.commit()
     db.close()
 
