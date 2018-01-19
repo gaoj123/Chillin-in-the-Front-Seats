@@ -65,4 +65,7 @@ liK -- 2018-01-17 16:38
 Fixed navbar and improved formatting for login and create account forms.
 
 gaoJ -- 2018-01-18 14:50
-Added guess route to app.py, created guess.html, and started other routes (notification, guessed, gallery). Also added these routes and html pages to the design doc to reflect the changes regarding how our game works.
+Added guess route to app.py, created guess.html. Also added these routes and html pages to the design doc to reflect the changes regarding how our game works.
+
+gaoJ -- 2018-01-19 14:47
+Modified home page so that it's different for users already logged in, added notification, guessed, gallery routes in app.py (and their corresponding html files).
