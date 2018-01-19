@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block body %}
+{% for noti in notis %}
+<p>{{noti}}</p>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+Guesses
+{% endblock %}
+
+{% block body %}
+{% for img in imgs %}
+{% set imgLink = img["image"] %}
+<img src="{{imgLink}}">
+{% endfor %}
+{% endblock %}
