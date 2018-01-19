@@ -72,3 +72,6 @@ Modified home page so that it's different for users already logged in, added not
 
 liK -- 2018-01-19 14:41
 Modified the drawing page
+
+soeW -- 2018-01-19 14:50
+Added new table of guesses to keep track of incorrect guesses made by users on a drawing
