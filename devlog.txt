@@ -69,3 +69,6 @@ Added guess route to app.py, created guess.html. Also added these routes and htm
 
 gaoJ -- 2018-01-19 14:47
 Modified home page so that it's different for users already logged in, added notification, guessed, gallery routes in app.py (and their corresponding html files).
+
+liK -- 2018-01-19 14:41
+Modified the drawing page
