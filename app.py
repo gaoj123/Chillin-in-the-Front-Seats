@@ -67,16 +67,32 @@ def joinRedirect():
         return redirect(url_for("login_page"))
 
 #This is the notification page
-#@app.route('/notifications')
-#def notifications():
+@app.route('/notifications')
+def notifications():
+    if loggedIn():
+        user=session["username"]
+        return render_template("notifications.html", notis=users.get_notifications_for(user, True), loggedin=loggedIn(), username=user)
+    else:
+        return redirect(url_for("login_page"))
+                                   
 
 #This is the gallery page
-#@app.route('/gallery')
-#def gallery():
+@app.route('/gallery')
+def gallery():
+    if loggedIn():
+        user=session["username"]
+        return render_template("gallery.html", notis=users.get_images_by(user), loggedin=loggedIn(), username=user)
+    else:
+        return redirect(url_for("login_page"))
 
 #This is the guessed drawings page
-#@app.route('/guessed')
-#def guessed():
+@app.route('/guessed')
+def guessed():
+    if loggedIn():
+        user=session["username"]
+        return render_template("guessed.html", notis=users.get_guessed_images(user), loggedin=loggedIn(), username=user)
+    else:
+        return redirect(url_for("login_page"))
 
 #User submits drawing
 #@app.route('/draw/submit')
@@ -92,6 +108,7 @@ def profile_route():
         return redirect(url_for("login_page"))
 
 #User guesses what others have drawn
+@app.route('/guess')
 def guess():
     if loggedIn():
         user=session["username"]
