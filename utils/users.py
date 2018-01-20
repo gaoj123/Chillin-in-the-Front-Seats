@@ -97,20 +97,21 @@ def get_image(id):
         return image_dict
 
 #Will update the worst and best score in the USERS table.
-def update_scores_for(username):
-    db = sqlite3.connect(db_name)
+def update_scores_for(username, db):
     c = db.cursor()
     username = username.replace("'", "''")
     #min_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT min(score) FROM drawings);" % username).fetchone()
     #max_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT max(score) FROM drawings);" % username).fetchone()
-    min_score_id = c.execute("SELECT min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    max_score_id = c.execute("SELECT max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    print username
+    print min_score_id
+    print max_score_id
     if min_score_id != None and min_score_id != max_score_id: #to prevent using the same image in both categories
         c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (min_score_id[0], username))
     if max_score_id != None:
         c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (max_score_id[0], username))
     db.commit()
-    db.close()
 
 #Note: the drawing must exist
 def add_guess(username, drawing_id, guess):
@@ -128,12 +129,35 @@ def add_guess(username, drawing_id, guess):
         else:
             predecessors = predecessors[0]
         points = max(0, 20 - predecessors)
-        c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = (SELECT username FROM drawings WHERE id = %d);" % (points, drawing_id))
+        artist = c.execute("SELECT username FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
+        c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = '%s';" % (points, artist))
+        #update_scores_for(artist, db)
     else:
         c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
     db.commit()
     db.close()
     return was_guess_correct
+
+#sends a notification to the specified user. <a href="link">message</a> will appear.
+def add_notification_for(username, message, link):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    c.execute("INSERT INTO notifications (recipient, message, link, seen, timestamp) VALUES ('%s', '%s', '%s', 0, datetime('now'))" % (username, message, link))
+    db.commit()
+    db.close()
+
+#Returns a list of all notifications. Most recent ones will be first. Each one is a dictionary with these keys: message, link, seen (boolean), timestamp (string)
+def get_notifications_for(username):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    notifications = c.execute("SELECT message, link, seen, timestamp FROM notifications WHERE recipient = '%s' ORDER BY timestamp DESC;" % username).fetchall()
+    db.close()
+    index = 0
+    while index < len(notifications):
+        notifications[index] = tuple_to_dictionary(notifications[index], ["message", "link", "seen", "timestamp"])
+        notifications[index]["seen"] = (notifications[index]["seen"] == 1)
+        index += 1
+    return notifications
 
 #Updates a user's username to a new one    
 def update_username(old_user, new_user):
