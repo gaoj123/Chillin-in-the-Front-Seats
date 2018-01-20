@@ -49,7 +49,7 @@ def add_new_user(user, pw, pfp):
     db.commit()
     db.close()
 
-#Returns a dictionary with these keys: username, pfp, best_image, worst_image
+#Returns a dictionary with these keys: username, pfp, best_image, worst_image, guesser_score, artist_score, number_drawings
 def get_user_stats(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
@@ -76,21 +76,24 @@ def add_drawing(username, encoded_image, word):
     db.commit()
     db.close()
 
-#Returns a dictionary with the following keys: image (encoded), word (what it is), guesses (dictionary), artist (user who made it), id and solved (boolean)
+#Returns a dictionary with the following keys: image (encoded), word (what it is), artist (user who made it), id, solved (boolean) and guesses (a list of dictionaries; each dictionary has the keys username, guess, when and are sorted from earliest to last)
 def get_image(id):
     if id == None:
         return {"image": "/static/missing.png", "word": "", "score": 0, "artist": "", "id": None}
     id = int(id)
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    image_stats = c.execute("SELECT id, username, image, word, guesses, solved FROM drawings WHERE id = %d;" % id).fetchone()
+    image_stats = c.execute("SELECT id, username, image, word, solved FROM drawings WHERE id = %d;" % id).fetchone()
+    wrong_guesses = c.execute("SELECT username, guess, timestamp FROM guesses WHERE drawing_id = %d ORDER BY timestamp ASC;" % id).fetchall()
     db.close()
     if image_stats == None:
         return {}
     else:
-        image_dict = tuple_to_dictionary(image_stats, ["id", "artist", "image", "word", "guesses", "solved"])
-        image_dict["guesses"] = eval(image_dict["guesses"])
+        image_dict = tuple_to_dictionary(image_stats, ["id", "artist", "image", "word", "solved"])
         image_dict["solved"] = (image_dict["solved"] == 1)
+        image_dict["guesses"] = []
+        for g in wrong_guesses:
+            image_dict["guesses"].append(tuple_to_dictionary(g, ["username", "guess", "when"]))
         return image_dict
 
 #Will update the worst and best score in the USERS table.
@@ -98,14 +101,39 @@ def update_scores_for(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
     username = username.replace("'", "''")
-    min_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT min(score) FROM drawings);" % username).fetchone()
-    max_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT max(score) FROM drawings);" % username).fetchone()
+    #min_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT min(score) FROM drawings);" % username).fetchone()
+    #max_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT max(score) FROM drawings);" % username).fetchone()
+    min_score_id = c.execute("SELECT min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    max_score_id = c.execute("SELECT max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
     if min_score_id != None and min_score_id != max_score_id: #to prevent using the same image in both categories
         c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (min_score_id[0], username))
     if max_score_id != None:
         c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (max_score_id[0], username))
     db.commit()
     db.close()
+
+#Note: the drawing must exist
+def add_guess(username, drawing_id, guess):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    drawing_id = int(drawing_id)
+    correct = c.execute("SELECT word FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
+    was_guess_correct = (guess.lower() == correct.lower())
+    if was_guess_correct == True:
+        c.execute("UPDATE drawings SET solved = 1 WHERE id = %d;" % drawing_id)
+        c.execute("UPDATE users SET guesser_score = guesser_score + 1 WHERE username = '%s';" % username)
+        predecessors = c.execute("SELECT count(*) FROM guesses WHERE drawing_id = %d;" % drawing_id).fetchone()
+        if predecessors == None or len(predecessors) == 0:
+            predecessors = 0
+        else:
+            predecessors = predecessors[0]
+        points = max(0, 20 - predecessors)
+        c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = (SELECT username FROM drawings WHERE id = %d);" % (points, drawing_id))
+    else:
+        c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
+    db.commit()
+    db.close()
+    return was_guess_correct
 
 #Updates a user's username to a new one    
 def update_username(old_user, new_user):
