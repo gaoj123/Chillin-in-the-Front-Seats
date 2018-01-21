@@ -135,6 +135,17 @@ def add_guess(username, drawing_id, guess):
     db.close()
     return was_guess_correct
 
+#Returns a list of drawings that the specified user hasnt guessed yet.
+def random_drawings(username, count):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    list_id = c.execute("SELECT id FROM drawings WHERE username != '%s' AND solved = 0 AND id NOT IN (SELECT drawing_id FROM guesses WHERE username = '%s')" % (username, username)).fetchall()[:count]
+    db.close()
+    list_drawings = []
+    for id in list_id:
+        list_drawings.append(get_image(id[0]))
+    return list_drawings
+
 #sends a notification to the specified user. <a href="link">message</a> will appear.
 def add_notification_for(username, message, link):
     db = sqlite3.connect(db_name)
@@ -183,6 +194,28 @@ def update_pfp(username, pfp):
     c.execute(command)
     db.commit()
     db.close()
+
+#Returns their score as an artist
+def get_ascore(username):
+    return get_user_stats(username)["artist_score"]
+#Returns their score as a guesser
+def get_gscore(username):
+    return get_user_stats(username)["guesser_score"]
+#Returns the username of who made the drawing
+def get_artist(drawing_id):
+    return get_image(drawing_id)["artist"]
+#Returns the number of guesses submitted for a drawing
+def get_num_guesses(drawing_id):
+    return len(get_image(drawing_id)["guesses"])
+#Returns the username of whoever solved the drawing. Assumes that the drawing is solved.
+def who_guessed_it(drawing_id):
+    return get_image(drawing_id)["guesses"][-1]["username"]
+#Returns the score for an individual drawing. Assumes that the drawing is solved.
+def get_dscore(drawing_id):
+    return 21 - len(get_image(drawing_id)["guesses"])
+#Returns the answer given a drawing id
+def get_answer(drawing_id):
+    return get_image(drawing_id)["word"]
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):
