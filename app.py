@@ -168,7 +168,7 @@ def score():
         correct=get_image(id)["word"]
         correctOrNot=guesserResponse.lower()==correct.lower()
         if correctOrNot:
-            #users.add_notification_for(insertUser,user+" guessed your drawing correctly", "/draw/view?id="+id)
+            users.add_notification_for(insertUser,user+" guessed your drawing correctly", "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
