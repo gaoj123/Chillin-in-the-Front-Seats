@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+Guessing Image
+{% endblock %}
+<h1>What do you think this object is?</h1>
+<img src="{{link}}">
+<form action="/guess/score?id={{id}}">
+   Object: <input type="text" name="guess"> 
+  <input type="submit" value="Submit">
+</form>
+{% block body %}

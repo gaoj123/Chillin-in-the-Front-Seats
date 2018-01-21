@@ -5,12 +5,10 @@ Guess
 {% endblock %}
 
 {% block body %}
-{% set i = 1 %}
 {% for image in images %}
-<form action="/draw/score?id={{image[id]}}">
-  Object: <input type="text" name={{i}}>
-  <input type="submit" value="Submit">
-</form>
-{% set i = i + 1 %}
+<p><a href="/guess/choice?id="+{{image["id"]}}>
+<img src="{{image["image"]}}">
+</a>
+</p>
 {% endfor %}
 {% endblock %}
