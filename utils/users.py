@@ -219,6 +219,12 @@ def get_dscore(drawing_id):
 #Returns the answer given a drawing id
 def get_answer(drawing_id):
     return get_image(drawing_id)["word"]
+#Returns a user's guess for an image, or None if they haven't guessed yet
+def get_guess(username, drawing_id):
+    for guess in get_image(drawing_id)["guesses"]:
+        if guess["username"] == username:
+            return guess["guess"]
+    return None
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):
