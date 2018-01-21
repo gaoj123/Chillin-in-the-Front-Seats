@@ -5,14 +5,17 @@ User Profile
 {% endblock %}
 
 {% block body %}
+<br><br><br><h1>Profile</h1>
 <div class="container">
     <div class="row">
         <div class="col col-md-4"><img src="{{pfp}}"></div>
         <div class="col"><h1>Welcome, {{ username }}</h1><h3>You made {{ number }} drawings</h3></div>
     </div>
 </div>
+<h2>Artist Score: {{artistScore}}</h2><br>
+<h2>Guesser Score: {{guesserScore}}</h2><br>
 <h3>Best Drawing:</h3><br>
-<img src="{{best}}">
+<img src="{{best}}"><br>
 <h3>Worst Drawing:</h3><br>
 <img src="{{worst}}">
 {% endblock %}
