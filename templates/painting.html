@@ -127,8 +127,9 @@
         changeThickness(this.value);
     });
     for(var i = 0; i < modeSelectors.length; i++) {
+        console.log("Event listener for " + modeSelectors[i].value);
         modeSelectors[i].addEventListener("change", function() {
-            console.log(getImage());
+            console.log(mode + " --> " + this.value);
             mode = this.value;
         });
     }

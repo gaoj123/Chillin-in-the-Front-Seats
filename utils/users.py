@@ -204,9 +204,12 @@ def get_gscore(username):
 #Returns the username of who made the drawing
 def get_artist(drawing_id):
     return get_image(drawing_id)["artist"]
-#Returns the number of guesses submitted for a drawing
+#Returns the number of incorrect guesses submitted for a drawing
 def get_num_guesses(drawing_id):
-    return len(get_image(drawing_id)["guesses"])
+    image = get_image(drawing_id)
+    if image["solved"] == True:
+        return len(image["guesses"]) - 1
+    return len(image["guesses"])
 #Returns the username of whoever solved the drawing. Assumes that the drawing is solved.
 def who_guessed_it(drawing_id):
     return get_image(drawing_id)["guesses"][-1]["username"]
