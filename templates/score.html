@@ -6,5 +6,11 @@ Score
 
 {% block body %}
 <h1>Score:</h1>
-{{confLevel}}
+{% if accuracy %}
+<h2>Correct!</h2>
+<h3>+ 5 Points!</h3>
+{% else %}
+<h2>Sorry, incorrect!</h2>
+{% endif %}
+<a class="btn btn-outline-success btn-lg" href="/guess" role="button">Guess Other Drawings</a>
 {% endblock %}

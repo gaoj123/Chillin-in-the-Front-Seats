@@ -5,7 +5,8 @@ Choose Word
 {% endblock %}
 
 {% block body %}
-<h1>Choose which one you want to draw</h1>
+<br><br><br><br><br>
+<h1>Choose which one you want to draw</h1><br><br><br>
 {% for word in words %}
 <button onclick="location.href='/draw/canvas?id={{word}}';" id="{{word}}" type="button" class="btn btn-secondary btn-lg">{{word}}</button>
 {% endfor %}
