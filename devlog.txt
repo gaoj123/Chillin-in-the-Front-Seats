@@ -76,5 +76,11 @@ Modified the drawing page
 soeW -- 2018-01-19 14:50
 Added new table of guesses to keep track of incorrect guesses made by users on a drawing
 
+zlotskiyM -- 2018-01-20 18:34
+Wrote methods to access notifications from the database.
+
 gaoJ -- 2018-01-20 22:33
 Worked on guess and score routes in app.py by calling database methods in users.py, also worked on their corresponding html files.  Fixed login redirect issue.  Also started notifications route/HTML
+
+zlotskiyM, soeW -- 2018-01-21 12:13
+Fixed some issues with the database. Points are now correctly awarded, and the best/worst images are kept track of. Wrote a very long SQL statement.

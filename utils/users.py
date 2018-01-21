@@ -96,16 +96,18 @@ def get_image(id):
             image_dict["guesses"].append(tuple_to_dictionary(g, ["username", "guess", "when"]))
         return image_dict
 
-#Will update the worst and best score in the USERS table.
+#Will update the worst and best score in the USERS table. DB must be an sqlite connection (not cursor). Called by add_guess()
 def update_scores_for(username, db):
     c = db.cursor()
     username = username.replace("'", "''")
     min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
     max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    if min_score_id != None and min_score_id != max_score_id: #to prevent using the same image in both categories
-        c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (min_score_id[0], username))
-    if max_score_id != None:
-        c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (max_score_id[0], username))
+    if (min_score_id == None) or (None in min_score_id):
+        return
+    else: 
+        c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (min_score_id[0], username))
+        if min_score_id != max_score_id: #to prevent using the same image in both categories
+            c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (max_score_id[0], username))
     db.commit()
 
 #Stores a guess, then returns True or False depending on if it was right. If it was right, points will be awarded accordingly.
@@ -123,12 +125,12 @@ def add_guess(username, drawing_id, guess):
         if predecessors == None or len(predecessors) == 0:
             predecessors = 0
         else:
-            predecessors = predecessors[0]
+            predecessors = predecessors[0] - 1 #subtract one to not account for the correct guess
         points = max(0, 20 - predecessors)
         artist = c.execute("SELECT username FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
         c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = '%s';" % (points, artist))
         db.commit()
-        #update_scores_for(artist, db)
+        update_scores_for(artist, db)
     db.commit()
     db.close()
     return was_guess_correct
@@ -181,39 +183,6 @@ def update_pfp(username, pfp):
     c.execute(command)
     db.commit()
     db.close()
-
-#Given a word, will return a list of images drawn of that word. Each item will be a dictionary of the form returned by get_image()
-#The results will be sorted by score. The first one will have lowest score, and the last will have the highest.
-def get_images_of(word):
-    word = word.replace("'", "''")
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    images = c.execute("SELECT image, word, username, id, guesses, solved FROM drawings WHERE word = '%s' ORDER BY (length(guesses) - length(replace(guesses, ',', '')) + 1) ASC;" % word).fetchall()
-    db.close()
-    index = 0
-    while index < len(images):
-        images[index] = tuple_to_dictionary(images[index], ["image", "word", "artist", "id", "guesses", "solved"])
-        images[index]["guesses"] = eval(images[index]["guesses"])
-        images[index]["solved"] = (images[index]["solved"] == 1)
-        index += 1
-    return images
-
-#returns a list of dictionaries, where each dictionary is in the format of get_image(), and they are sorted by score from worst to best
-#All the images are by the user you specify.
-def get_images_by(username):
-    username = username.replace("'", "''")
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    images = c.execute("SELECT image, word, username, id, guesses, solved FROM drawings WHERE username = '%s' ORDER BY (length(guesses) - length(replace(guesses, ',', '')) + 1) ASC;" % username).fetchall()
-    db.close()
-    index = 0
-    while index < len(images):
-        images[index] = tuple_to_dictionary(images[index], ["image", "word", "score", "artist", "id", "guesses", "id"])
-        images[index]["guesses"] = eval(images[index]["guesses"])
-        images[index]["solved"] = (images[index]["solved"] == 1)
-        index += 1
-    return images
-
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):
