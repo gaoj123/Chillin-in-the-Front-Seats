@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-#import utils.drawings as draw
+import utils.drawings as draw
 
 #import utils.dict as dict
 import random
@@ -94,9 +94,14 @@ def guessed():
     else:
         return redirect(url_for("login_page"))
 
-#User submits drawing
-#@app.route('/draw/submit')
-#def submitted():
+User submits drawing
+@app.route('/draw/submit')
+def submitted():
+    if loggedIn():
+        user=session["username"]
+        return render_template("submitted.html", username=user, loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
 
 #This is the profile page
 @app.route('/account/profile')
@@ -130,15 +135,6 @@ def chooseWord():
     else:
         return redirect(url_for("login_page"))
 
-#User chooses word to draw
-#@app.route('/draw/new/domain')
-#def chooseWord():
-    #if loggedIn():
-        #domain=request.args["id"];
-        #return render_template("chooseWord.html", words=dict.returnWords(domain), username=session["username"], loggedin=loggedIn())
-    #else:
-        #return redirect(url_for("login_page"))
-
 #User draws on canvas
 @app.route('/draw/canvas')
 def draw():
@@ -148,19 +144,27 @@ def draw():
     else:
         return redirect(url_for("login_page"))
 
-#User sees score for current drawing
-@app.route('/draw/score', methods=["POST"])
+#User choice for guessing other user's image
+@app.route('/guess/choice', methods=["POST"])
+def choice():
+    if loggedIn():
+        ID=request.form["id"]
+        imageLink=draw.get_image(ID)
+        return render_template("guessChoice.html", id=ID, link=imageLink, username=session["username"], loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
+
+#User sees score for guessing other user's image
+@app.route('/guess/score', methods=["POST"])
 def score():
     if loggedIn():
-        img=request.form["image"];
-        #scores=clar.get_results_bits(img);
-        word = request.form.get("image", "")
-        #if(word in scores):
-        #    score = scores[word]
+        id=request.form["id"];
         user = session["username"]
-        users.add_drawing(user, img, word, 5) #replace 5 with clarifai confidence
-        users.update_scores_for(user)
-        return render_template("score.html", username=session["username"], confLevel=5, loggedin=loggedIn())
+        guesserResponse=request.form["guess"]
+        users.add_guess(user, id, guesserResponse) #replace 5 with clarifai confidence
+        correct=get_image(id)["word"]
+        correctOrNot=guesserResponse.lower()==correct.lower()
+        return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 #Log out
