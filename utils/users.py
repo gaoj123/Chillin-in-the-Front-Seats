@@ -100,20 +100,15 @@ def get_image(id):
 def update_scores_for(username, db):
     c = db.cursor()
     username = username.replace("'", "''")
-    #min_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT min(score) FROM drawings);" % username).fetchone()
-    #max_score_id = c.execute("SELECT id FROM drawings WHERE username = '%s' AND score = (SELECT max(score) FROM drawings);" % username).fetchone()
     min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
     max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    print username
-    print min_score_id
-    print max_score_id
     if min_score_id != None and min_score_id != max_score_id: #to prevent using the same image in both categories
         c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (min_score_id[0], username))
     if max_score_id != None:
         c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (max_score_id[0], username))
     db.commit()
 
-#Note: the drawing must exist
+#Stores a guess, then returns True or False depending on if it was right. If it was right, points will be awarded accordingly.
 def add_guess(username, drawing_id, guess):
     db = sqlite3.connect(db_name)
     c = db.cursor()
@@ -131,8 +126,10 @@ def add_guess(username, drawing_id, guess):
         points = max(0, 20 - predecessors)
         artist = c.execute("SELECT username FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
         c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = '%s';" % (points, artist))
-        #update_scores_for(artist, db)
+        db.commit()
+        update_scores_for(artist, db)
     else:
+        #move this line up to before the if statement, get rid of this else part
         c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
     db.commit()
     db.close()
