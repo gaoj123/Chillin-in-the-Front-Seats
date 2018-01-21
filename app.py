@@ -1,7 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-import utils.drawings as draw
+#import utils.drawings as draw
 
 #import utils.dict as dict
 import random
@@ -38,7 +38,7 @@ def login_logic():
         return redirect(url_for("profile_route"))
     else:
         flash("Wrong username or password.")
-        return redirect(url_for("login_logic"))
+        return redirect(url_for("login_page"))
 
 #This si the page users see when making an account. Asks for username, password & confirm, and a link to a profile picture.
 @app.route('/account/create')
@@ -94,7 +94,7 @@ def guessed():
     else:
         return redirect(url_for("login_page"))
 
-User submits drawing
+#User submits drawing
 @app.route('/draw/submit')
 def submitted():
     if loggedIn():
