@@ -111,7 +111,7 @@ def submitted():
 def profile_route():
     if loggedIn():
         udict = users.get_user_stats(session["username"]);
-        return render_template("profile.html", pfp=udict["pfp"],username=session["username"], loggedin=loggedIn(), best=udict["best_image"]["image"], worst=udict["worst_image"]["image"], number=udict["number_drawings"])
+        return render_template("profile.html", pfp=udict["pfp"],username=session["username"], loggedin=loggedIn(), best=udict["best_image"]["image"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=udict["artist_score"], guesserScore=udict["guesser_score"])
     else:
         return redirect(url_for("login_page"))
 
@@ -164,12 +164,20 @@ def score():
         id=request.form["id"];
         user = session["username"]
         guesserResponse=request.form["guess"]
-        users.add_guess(user, id, guesserResponse) #replace 5 with clarifai confidence
+        users.add_guess(user, id, guesserResponse) 
         correct=get_image(id)["word"]
         correctOrNot=guesserResponse.lower()==correct.lower()
+        if correctOrNot:
+            #users.add_notification_for(insertUser,user+" guessed your drawing correctly", "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
+
+#View image (associated with notification)
+#@app.route('/draw/view')
+#def view():
+    
+
 #Log out
 @app.route('/account/logout')
 def logout():
