@@ -5,7 +5,9 @@ Notifications
 {% endblock %}
 
 {% block body %}
+<br><br><br>
+<h1>Notifications</h1>
 {% for noti in notis %}
-<p>{{noti}}</p>
+<p><a href="{{noti["link"]}}">{{noti["message"]}}</a></p>
 {% endfor %}
 {% endblock %}
