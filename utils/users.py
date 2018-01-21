@@ -115,6 +115,7 @@ def add_guess(username, drawing_id, guess):
     drawing_id = int(drawing_id)
     correct = c.execute("SELECT word FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
     was_guess_correct = (guess.lower() == correct.lower())
+    c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
     if was_guess_correct == True:
         c.execute("UPDATE drawings SET solved = 1 WHERE id = %d;" % drawing_id)
         c.execute("UPDATE users SET guesser_score = guesser_score + 1 WHERE username = '%s';" % username)
@@ -127,10 +128,7 @@ def add_guess(username, drawing_id, guess):
         artist = c.execute("SELECT username FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
         c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = '%s';" % (points, artist))
         db.commit()
-        update_scores_for(artist, db)
-    else:
-        #move this line up to before the if statement, get rid of this else part
-        c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
+        #update_scores_for(artist, db)
     db.commit()
     db.close()
     return was_guess_correct
