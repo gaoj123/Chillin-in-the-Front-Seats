@@ -71,7 +71,7 @@ def joinRedirect():
 def notifications():
     if loggedIn():
         user=session["username"]
-        return render_template("notifications.html", notis=users.get_notifications_for(user, True), loggedin=loggedIn(), username=user)
+        return render_template("notifications.html", notis=users.get_notifications_for(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
                                    
@@ -81,7 +81,7 @@ def notifications():
 def gallery():
     if loggedIn():
         user=session["username"]
-        return render_template("gallery.html", notis=users.get_images_by(user), loggedin=loggedIn(), username=user)
+        return render_template("gallery.html", pics=users.get_images_by(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -95,10 +95,13 @@ def guessed():
         return redirect(url_for("login_page"))
 
 #User submits drawing
-@app.route('/draw/submit')
+@app.route('/draw/submit', methods=["POST"])
 def submitted():
     if loggedIn():
         user=session["username"]
+        word=request.form["word"]
+        link=request.form["image"]
+        users.add_drawing(user, link, word)
         return render_template("submitted.html", username=user, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
