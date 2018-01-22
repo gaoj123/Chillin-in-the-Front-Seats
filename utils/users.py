@@ -1,6 +1,9 @@
 import sqlite3 #enables control of an sqlite database
 
 #-------------------------------------------------------------
+##############################
+## WHO TOUCHA MY DATABASE?? ##
+##############################
 db_name = "data/chillDB.db"
 
 #Run once, creates the table
@@ -13,6 +16,10 @@ def create_table():
     cursor.execute("CREATE TABLE guesses (username TEXT, drawing_id INTEGER, guess TEXT, timestamp TEXT);")
     db.commit()
     db.close()
+
+##################
+## USER METHODS ##
+##################
 
 #Given a username and password, will return true if the two correspond, false otherwise
 def validate_login(uname, pword):
@@ -67,6 +74,24 @@ def get_user_stats(username):
         return user_stats
     return {}
 
+#Will update the worst and best score in the USERS table. DB must be an sqlite connection (not cursor). Called by add_guess()
+def update_scores_for(username, db):
+    c = db.cursor()
+    username = username.replace("'", "''")
+    min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    if (min_score_id == None) or (None in min_score_id):
+        return
+    else: 
+        c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (min_score_id[0], username))
+        if min_score_id != max_score_id: #to prevent using the same image in both categories
+            c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (max_score_id[0], username))
+    db.commit()
+
+#####################
+## DRAWING METHODS ##
+#####################
+
 #Stores a drawing and its metadata in the database.
 def add_drawing(username, encoded_image, word):
     db = sqlite3.connect(db_name)
@@ -95,20 +120,6 @@ def get_image(id):
         for g in wrong_guesses:
             image_dict["guesses"].append(tuple_to_dictionary(g, ["username", "guess", "when"]))
         return image_dict
-
-#Will update the worst and best score in the USERS table. DB must be an sqlite connection (not cursor). Called by add_guess()
-def update_scores_for(username, db):
-    c = db.cursor()
-    username = username.replace("'", "''")
-    min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    if (min_score_id == None) or (None in min_score_id):
-        return
-    else: 
-        c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (min_score_id[0], username))
-        if min_score_id != max_score_id: #to prevent using the same image in both categories
-            c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (max_score_id[0], username))
-    db.commit()
 
 #Stores a guess, then returns True or False depending on if it was right. If it was right, points will be awarded accordingly.
 def add_guess(username, drawing_id, guess):
@@ -146,6 +157,35 @@ def random_drawings(username, count):
         list_drawings.append(get_image(id[0]))
     return list_drawings
 
+#Returns a list of the images the user has guessed on, wrong and correct. Each item is a dictionary like get_image()
+def get_guessed_images(username):
+    list_id = [1, 2, 3, 4]
+    list_drawings = []
+    for id in list_id:
+        list_drawings.append(get_image(id))
+    return list_drawings
+
+#Returns a list of the images the user has drawn. Each item is a dictionary in the format of get_image()
+def get_images_by(username):
+    list_id = [1, 2, 3, 4]
+    list_drawings = []
+    for id in list_id:
+        list_drawings.append(get_image(id))
+    return list_drawings
+
+#Returns a list of the images with this word as their answer. Each item is a dictionary in the format of get_image()
+def get_images_of(word):
+    list_id = [1, 2, 3, 4]
+    list_drawings = []
+    for id in list_id:
+        list_drawings.append(get_image(id))
+    return list_drawings
+
+
+###################
+## NOTIFICATIONS ##
+###################
+
 #sends a notification to the specified user. <a href="link">message</a> will appear.
 def add_notification_for(username, message, link):
     db = sqlite3.connect(db_name)
@@ -166,6 +206,18 @@ def get_notifications_for(username):
         notifications[index]["seen"] = (notifications[index]["seen"] == 1)
         index += 1
     return notifications
+
+#Sets a notification to seen = True
+def read_notification(username, timestamp):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    c.execute("UPDATE notifications SET seen = 1 WHERE recipient = '%s' AND timestamp = '%s';" % (username, timestamp))
+    db.commit()
+    db.close()
+
+########################
+## CONVENIENT METHODS ##
+########################
 
 #Updates a user's username to a new one    
 def update_username(old_user, new_user):
