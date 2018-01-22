@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+Viewing Image
+{% endblock %}
+
+{% block body %}
+<br><br><br>
+<h1>{{word}}</h1>
+<img src="{{link}}">
+<h5>{{scoreSolved}}</h5>
+<br>
+<h5>Incorrect Guesses: {{incorrectGuessesNum}}</h5><br><br>
+<p>{{messageShown}}</p>
+{% endblock %}

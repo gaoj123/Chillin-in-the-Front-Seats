@@ -87,3 +87,6 @@ Fixed some issues with the database. Points are now correctly awarded, and the b
 
 gaoJ -- 2018-01-21 20:14
 Worked on guess and notifications routes and did Jinja/HTML.  These are currently working.  Users can draw and guess other users' drawings.  Guessing it correctly results in +5 to guesser score.  Also worked on view route, which allows individual drawings to be viewed; clicking it brings to a page with info like score if it has been guessed correctly and incorrect guesses for that drawing.  Noted problems including best/worst image.
+
+gaoJ -- 2018-01-22 10:55
+Fixed profile's best/worst image score to address all cases of "N/A".  Also modified what's displayed on the page when a user clicks on a notification to show the same message.  In addition, time is now included in notifications.

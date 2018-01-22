@@ -67,11 +67,12 @@ def joinRedirect():
         return redirect(url_for("login_page"))
 
 #This is the notification page
-@app.route('/notifications')
+@app.route('/account/notifications')
 def notifications():
     if loggedIn():
         user=session["username"]
-        return render_template("notifications.html", notis=users.get_notifications_for(user), loggedin=loggedIn(), username=user)
+        notis=users.get_notifications_for(user)
+        return render_template("notifications.html", notis=notis, loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
                                    
@@ -128,10 +129,15 @@ def profile_route():
     if loggedIn():
         user=session["username"]
         udict = users.get_user_stats(session["username"]);
-        if(udict["worst_image"]["image"]=="/static/missing.png"):
-            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore="N/A", bestScore="N/A", bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+        if udict["worst_image"]["image"]=="/static/missing.png":
+            worstScore1="N/A"
         else:
-            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=users.get_dscore(udict["worst_image"]["id"]), bestScore=users.get_dscore(udict["best_image"]["id"]), bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+           worstScore1=users.get_dscore(udict["worst_image"]["id"])
+        if udict["best_image"]["image"]=="/static/missing.png":
+            bestScore1="N/A"
+        else:
+            bestScore1=users.get_dscore(udict["best_image"]["id"])
+        return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=worstScore1, bestScore=bestScore1, bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
     else:
         return redirect(url_for("login_page"))
 
@@ -173,6 +179,7 @@ def updateLink():
         url=request.form["link"]
         user=session["username"]
         users.update_pfp(user, url)
+        users.add_notification_for(user, "You changed your profile picture", "/account/profile")
         return redirect(url_for("profile_route"))
     else:
         return redirect(url_for("login_page"))
@@ -203,13 +210,17 @@ def score():
         id=request.form["id"];
         user = session["username"]
         guesserResponse=request.form["guess"]
-        users.add_guess(user, id, guesserResponse) 
         correct=users.get_image(id)["word"]
-        correctOrNot=guesserResponse.lower()==correct.lower()
+        correctOrNot = users.add_guess(user, id, guesserResponse) 
+        guesses = users.get_image(id)["guesses"]
+        time = ""
+        for guess in guesses:
+            if guess["username"]==user:
+                time=guess["when"]
         if correctOrNot:
-            users.add_notification_for(users.get_artist(id),user+" guessed your drawing correctly", "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id),user+" guessed your drawing of '" + correct + "' correctly", "/draw/view?id="+id)
         else:
-            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed "+guesserResponse, "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed '"+guesserResponse+"' on your drawing of '" + correct + "'", "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -218,7 +229,7 @@ def score():
 @app.route('/draw/view', methods=["POST", "GET"])
 def view():
     if loggedIn():
-        id=request.args["id"];
+        id=request.args["id"]
         user=session["username"]
         if users.get_image(id)["solved"]==True:
             score="Score: "+str(users.get_dscore(id))
@@ -228,10 +239,41 @@ def view():
             message=""
             score=""
         numIncorrect=users.get_num_guesses(id)
-        return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, username=user, loggedin=loggedIn())    
+        image = users.get_image(id)
+        if image['solved'] == False:
+            return render_template("view.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
+        else:
+            return render_template("viewSolved.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
-    
+
+#This is a halfway point. Notification is marked as seen, and then you are redirected to the link associated with it.
+@app.route('/notification/view')
+def viewNoti():
+    if loggedIn():
+        time=request.args.get("time", "2018-01-24 10:00:00")
+        user=session["username"]
+        redir = request.args.get("redir", "/account/notifications")
+        users.read_notification(user, time) #marks as seen = True
+        return redirect(redir) #send them to wherever the notification link says to
+    else:
+        return redirect(url_for("login_page"))
+
+@app.route('/admin')
+def adminPage():
+    action = request.args.get("action", "")
+    target = request.args.get("for", "")
+    db = sqlite3.connect("data/chillDB.db")
+    c = db.cursor()
+    if action == "unsolve":
+        c.execute("UPDATE drawings SET solved = 0 WHERE id = %s;" % target)
+    elif action == "xguesses":
+        c.execute("DELETE FROM guesses WHERE drawing_id = %s" % target)
+    elif action == "xscore":
+        c.execute("UPDATE users SET guesser_score = 0, artist_score = 0 WHERE username = '%s';" % target)
+    db.commit()
+    db.close()
+    return "You tried <u>" + action + "</u> on <u>" + target + "</u>"
 
 #Log out
 @app.route('/account/logout')

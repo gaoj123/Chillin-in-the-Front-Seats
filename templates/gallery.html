@@ -7,6 +7,14 @@ Gallery
 {% block body %}
 {% for pic in pics %}
 {% set picLink = pic["image"] %}
-<a href="/draw/view?id="+pic["id"]><img src="{{picLink}}"></a>
+<a href="/draw/view?id={{pic['id']}}">
+    <img src="{{picLink}}"><br>
+    <caption>
+        {{ pic['word'] }}:
+        {{ pic['guesses']|length }} guesses,
+        {% if pic['solved'] %} solved {% else %} unsolved {% endif %}
+    </caption>
+</a>
+<br>
 {% endfor %}
 {% endblock %}
