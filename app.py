@@ -128,7 +128,10 @@ def profile_route():
     if loggedIn():
         user=session["username"]
         udict = users.get_user_stats(session["username"]);
-        return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=users.get_dscore(udict["worst_image"]["id"]), bestScore=users.get_dscore(udict["best_image"]["id"]), bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+        if(udict["worst_image"]["image"]=="/static/missing.png"):
+            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore="N/A", bestScore="N/A", bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+        else:
+            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=users.get_dscore(udict["worst_image"]["id"]), bestScore=users.get_dscore(udict["best_image"]["id"]), bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
     else:
         return redirect(url_for("login_page"))
 

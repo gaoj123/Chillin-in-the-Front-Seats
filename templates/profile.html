@@ -15,10 +15,19 @@ User Profile
 </div>
 <h2>Artist Score: {{artistScore}}</h2><br>
 <h2>Guesser Score: {{guesserScore}}</h2><br>
+
 <h3>Best Drawing:</h3><br>
+{% if bestScore == "N/A" %}
+<img src="{{best}}">
+{% else %}
 <a href="/draw/view?id={{bestId}}"><img src="{{best}}"></a><br>
+{% endif %}
 <h5>Score: {{bestScore}}</h5><br><hr><br>
 <h3>Worst Drawing:</h3><br>
+{% if worstScore == "N/A" %}
+<img src="{{worst}}">
+{% else %}
 <a href="/draw/view?id={{worstId}}"><img src="{{worst}}"></a>
+{% endif %}
 <h5>Score: {{worstScore}}</h5>
 {% endblock %}
