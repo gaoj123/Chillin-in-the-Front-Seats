@@ -8,9 +8,7 @@ def create_table():
     db = sqlite3.connect(db_name)
     cursor = db.cursor()
     cursor.execute("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT, pfp TEXT, guesser_score INTEGER, artist_score INTEGER, best_img_id INTEGER, worst_img_id INTEGER);")
-    cursor.execute("CREATE TABLE drawings (id INTEGER PRIMARY KEY, username TEXT, word TEXT, image TEXT, solved INTEGER);")
     cursor.execute("CREATE TABLE notifications (recipient TEXT, message TEXT, link TEXT, seen INTEGER, timestamp TEXT);")
-    cursor.execute("CREATE TABLE guesses (username TEXT, drawing_id INTEGER, guess TEXT, timestamp TEXT);")
     db.commit()
     db.close()
 
@@ -67,35 +65,6 @@ def get_user_stats(username):
         return user_stats
     return {}
 
-#Stores a drawing and its metadata in the database.
-def add_drawing(username, encoded_image, word):
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    username = username.replace("'", "''")
-    c.execute("INSERT INTO drawings (username, image, word, solved) VALUES ('%s', '%s', '%s', 0);" % (username, encoded_image, word))
-    db.commit()
-    db.close()
-
-#Returns a dictionary with the following keys: image (encoded), word (what it is), artist (user who made it), id, solved (boolean) and guesses (a list of dictionaries; each dictionary has the keys username, guess, when and are sorted from earliest to last)
-def get_image(id):
-    if id == None:
-        return {"image": "/static/missing.png", "word": "", "score": 0, "artist": "", "id": None, "guesses":[]}
-    id = int(id)
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    image_stats = c.execute("SELECT id, username, image, word, solved FROM drawings WHERE id = %d;" % id).fetchone()
-    wrong_guesses = c.execute("SELECT username, guess, timestamp FROM guesses WHERE drawing_id = %d ORDER BY timestamp ASC;" % id).fetchall()
-    db.close()
-    if image_stats == None:
-        return {}
-    else:
-        image_dict = tuple_to_dictionary(image_stats, ["id", "artist", "image", "word", "solved"])
-        image_dict["solved"] = (image_dict["solved"] == 1)
-        image_dict["guesses"] = []
-        for g in wrong_guesses:
-            image_dict["guesses"].append(tuple_to_dictionary(g, ["username", "guess", "when"]))
-        return image_dict
-
 #Will update the worst and best score in the USERS table. DB must be an sqlite connection (not cursor). Called by add_guess()
 def update_scores_for(username, db):
     c = db.cursor()
@@ -109,31 +78,6 @@ def update_scores_for(username, db):
         if min_score_id != max_score_id: #to prevent using the same image in both categories
             c.execute("UPDATE users SET worst_img_id = %d WHERE username = '%s';" % (max_score_id[0], username))
     db.commit()
-
-#Stores a guess, then returns True or False depending on if it was right. If it was right, points will be awarded accordingly.
-def add_guess(username, drawing_id, guess):
-    db = sqlite3.connect(db_name)
-    c = db.cursor()
-    drawing_id = int(drawing_id)
-    correct = c.execute("SELECT word FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
-    was_guess_correct = (guess.lower() == correct.lower())
-    c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
-    if was_guess_correct == True:
-        c.execute("UPDATE drawings SET solved = 1 WHERE id = %d;" % drawing_id)
-        c.execute("UPDATE users SET guesser_score = guesser_score + 5 WHERE username = '%s';" % username)
-        predecessors = c.execute("SELECT count(*) FROM guesses WHERE drawing_id = %d;" % drawing_id).fetchone()
-        if predecessors == None or len(predecessors) == 0:
-            predecessors = 0
-        else:
-            predecessors = predecessors[0] - 1 #subtract one to not account for the correct guess
-        points = max(0, 20 - predecessors)
-        artist = c.execute("SELECT username FROM drawings WHERE id = %d;" % drawing_id).fetchone()[0]
-        c.execute("UPDATE users SET artist_score = artist_score + %d WHERE username = '%s';" % (points, artist))
-        db.commit()
-        update_scores_for(artist, db)
-    db.commit()
-    db.close()
-    return was_guess_correct
 
 #Returns a list of drawings that the specified user hasnt guessed yet.
 def random_drawings(username, count):
