@@ -11,9 +11,9 @@ Log In
 
       {% with messages = get_flashed_messages() %}
       {% if messages %}
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
         {% for message in messages %}
-        <strong style="color: red;">{{ message }}</strong><br>
+        {{ message }}
         {% endfor %}
       </div>
       {% endif %}
@@ -32,7 +32,7 @@ Log In
       <div class = "form-group">
 	<input type="submit" name="login" value="Submit" class="btn btn-outline-primary btn-success">
       </div>
-      
+
 
     New? <a href="/account/create">Create Account</a>
     </form>
