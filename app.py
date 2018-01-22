@@ -240,7 +240,10 @@ def view():
             score=""
         numIncorrect=users.get_num_guesses(id)
         image = users.get_image(id)
-        return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())    
+        if image['solved'] == False:
+            return render_template("view.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
+        else:
+            return render_template("viewSolved.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
