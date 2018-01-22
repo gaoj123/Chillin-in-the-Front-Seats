@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+Viewing Image
+{% endblock %}
+
+{% block body %}
+<br><br><br>
+{% if solveOrNot %}
+<h1>{{answ}}</h1>
+{% else %}
+<h1>Drawing Has Not Been Guessed Correctly Yet</h1>
+{% endif %}
+<img src="{{link}}">
+<br>
+<h5>{{status}}</h5><br><br>
+{% if correctOrNot == False %}
+<p style="color:red;">Your Guess: {{response}}</p>
+{% endif %}
+{% endblock %}
