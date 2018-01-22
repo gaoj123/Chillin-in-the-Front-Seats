@@ -71,7 +71,15 @@ def joinRedirect():
 def notifications():
     if loggedIn():
         user=session["username"]
-        return render_template("notifications.html", notis=users.get_notifications_for(user), loggedin=loggedIn(), username=user)
+        notSeen=[]
+        seen=[]
+        notis=users.get_notifications_for(user)
+        for noti in notis:
+            if noti["seen"]==False:
+                notSeen.append(noti)
+            else:
+                seen.append(noti)
+        return render_template("notifications.html", seenNoti=seen, unseen=notSeen, loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
                                    
@@ -128,10 +136,15 @@ def profile_route():
     if loggedIn():
         user=session["username"]
         udict = users.get_user_stats(session["username"]);
-        if(udict["worst_image"]["image"]=="/static/missing.png"):
-            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore="N/A", bestScore="N/A", bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+        if udict["worst_image"]["image"]=="/static/missing.png":
+            worstScore1="N/A"
         else:
-            return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=users.get_dscore(udict["worst_image"]["id"]), bestScore=users.get_dscore(udict["best_image"]["id"]), bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
+           worstScore1=users.get_dscore(udict["worst_image"]["id"])
+        if udict["best_image"]["image"]=="/static/missing.png":
+            bestScore1="N/A"
+        else:
+            bestScore1=users.get_dscore(udict["best_image"]["id"])
+        return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=worstScore1, bestScore=bestScore1, bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
     else:
         return redirect(url_for("login_page"))
 
@@ -206,10 +219,14 @@ def score():
         users.add_guess(user, id, guesserResponse) 
         correct=users.get_image(id)["word"]
         correctOrNot=guesserResponse.lower()==correct.lower()
+        guesses=users.get_image(id)["guesses"]
+        for guess in guesses:
+            if guess["username"]==user:
+                time=guess["when"]
         if correctOrNot:
-            users.add_notification_for(users.get_artist(id),user+" guessed your drawing correctly", "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id),user+" guessed your drawing correctly on "+time, "/notification/view?id="+id+"&guesser="+user+"&time="+time)
         else:
-            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed "+guesserResponse, "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed "+guesserResponse+" on "+time, "/notification/view?id="+id+"&guesser="+user+"&time="+time)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -218,7 +235,7 @@ def score():
 @app.route('/draw/view', methods=["POST", "GET"])
 def view():
     if loggedIn():
-        id=request.args["id"];
+        id=request.args["id"]
         user=session["username"]
         if users.get_image(id)["solved"]==True:
             score="Score: "+str(users.get_dscore(id))
@@ -231,7 +248,27 @@ def view():
         return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, username=user, loggedin=loggedIn())    
     else:
         return redirect(url_for("login_page"))
-    
+
+#view notification individually
+@app.route('/notification/view', methods=["POST", "GET"])
+def viewNoti():
+    if loggedIn():
+        id=request.args["id"]
+        time=request.args["time"]
+        guesser=request.args["guesser"]
+        user=session["username"]
+        if users.get_image(id)["solved"]==True:
+            score="Score: "+str(users.get_dscore(id))
+        else:
+            score=""
+        if users.get_guess(guesser,id).lower()==users.get_answer(id).lower():
+            message=guesser+" guessed your drawing correctly on "+time
+        else:
+            message=guesser+" incorrectly guessed "+users.get_guess(guesser,id)+" on "+time
+        numIncorrect=users.get_num_guesses(id)
+        return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, username=user, loggedin=loggedIn())    
+    else:
+        return redirect(url_for("login_page"))
 
 #Log out
 @app.route('/account/logout')

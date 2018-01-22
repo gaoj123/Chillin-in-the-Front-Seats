@@ -7,7 +7,11 @@ Notifications
 {% block body %}
 <br><br><br>
 <h1>Notifications</h1>
-{% for noti in notis %}
-<p><a href="{{noti["link"]}}">{{noti["message"]}}</a></p>
+{% for unseenOne in unseen %}
+<p><a href="{{unseenOne["link"]}}">{{unseenOne["message"]}}</a></p>
+{% endfor %}
+<hr>
+{% for seenOne in seenNoti %}
+<p><a href="{{seenOne["link"]}}">{{seenOne["message"]}}</a></p>
 {% endfor %}
 {% endblock %}
