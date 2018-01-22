@@ -84,3 +84,6 @@ Worked on guess and score routes in app.py by calling database methods in users.
 
 zlotskiyM, soeW -- 2018-01-21 12:13
 Fixed some issues with the database. Points are now correctly awarded, and the best/worst images are kept track of. Wrote a very long SQL statement.
+
+gaoJ -- 2018-01-21 20:14
+Worked on guess and notifications routes, currently working.  Users can draw and guess other users' drawings.  Guessing it correctly results in +5 to guesser score.  Also worked on view route, which allows individual drawings to be viewed; clicking it brings to a page with info like score if it has been guessed correctly and incorrect guesses for that drawing.  Noted problems including best/worst image.
