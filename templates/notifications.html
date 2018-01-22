@@ -7,7 +7,18 @@ Notifications
 {% block body %}
 <br><br><br>
 <h1>Notifications</h1>
-{% for noti in notis %}
-<p><a href="{{noti["link"]}}">{{noti["message"]}}</a></p>
-{% endfor %}
+{% if notis|length > 0 %}
+    {% for noti in notis %}
+        {% if noti["seen"] == False %}
+        <p style="background-color: #C9F1FF;">
+        {% else %}
+        <p>
+        {% endif %}
+            <a href="{{noti['link']}}">{{noti["message"]}}</a><br>
+            {{ noti["timestamp"] }}
+        </p>
+    {% endfor %}
+{% else %}
+    <b>You don't have notifications yet</b>
+{% endif %}
 {% endblock %}
