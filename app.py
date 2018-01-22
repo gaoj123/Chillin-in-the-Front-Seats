@@ -67,19 +67,12 @@ def joinRedirect():
         return redirect(url_for("login_page"))
 
 #This is the notification page
-@app.route('/notifications')
+@app.route('/account/notifications')
 def notifications():
     if loggedIn():
         user=session["username"]
-        notSeen=[]
-        seen=[]
         notis=users.get_notifications_for(user)
-        for noti in notis:
-            if noti["seen"]==False:
-                notSeen.append(noti)
-            else:
-                seen.append(noti)
-        return render_template("notifications.html", seenNoti=seen, unseen=notSeen, loggedin=loggedIn(), username=user)
+        return render_template("notifications.html", notis=notis, loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
                                    
@@ -186,6 +179,7 @@ def updateLink():
         url=request.form["link"]
         user=session["username"]
         users.update_pfp(user, url)
+        users.add_notification_for(user, "You changed your profile picture", "/account/profile")
         return redirect(url_for("profile_route"))
     else:
         return redirect(url_for("login_page"))
@@ -216,17 +210,17 @@ def score():
         id=request.form["id"];
         user = session["username"]
         guesserResponse=request.form["guess"]
-        users.add_guess(user, id, guesserResponse) 
         correct=users.get_image(id)["word"]
-        correctOrNot=guesserResponse.lower()==correct.lower()
-        guesses=users.get_image(id)["guesses"]
+        correctOrNot = users.add_guess(user, id, guesserResponse) 
+        guesses = users.get_image(id)["guesses"]
+        time = ""
         for guess in guesses:
             if guess["username"]==user:
                 time=guess["when"]
         if correctOrNot:
-            users.add_notification_for(users.get_artist(id),user+" guessed your drawing correctly on "+time, "/notification/view?id="+id+"&guesser="+user+"&time="+time)
+            users.add_notification_for(users.get_artist(id),user+" guessed your drawing of '" + correct + "' correctly", "/draw/view?id="+id)
         else:
-            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed "+guesserResponse+" on "+time, "/notification/view?id="+id+"&guesser="+user+"&time="+time)
+            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed '"+guesserResponse+"' on your drawing of '" + correct + "'", "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -249,26 +243,33 @@ def view():
     else:
         return redirect(url_for("login_page"))
 
-#view notification individually
-@app.route('/notification/view', methods=["POST", "GET"])
+#This is a halfway point. Notification is marked as seen, and then you are redirected to the link associated with it.
+@app.route('/notification/view')
 def viewNoti():
     if loggedIn():
-        id=request.args["id"]
-        time=request.args["time"]
-        guesser=request.args["guesser"]
+        time=request.args.get("time", "2018-01-24 10:00:00")
         user=session["username"]
-        if users.get_image(id)["solved"]==True:
-            score="Score: "+str(users.get_dscore(id))
-        else:
-            score=""
-        if users.get_guess(guesser,id).lower()==users.get_answer(id).lower():
-            message=guesser+" guessed your drawing correctly on "+time
-        else:
-            message=guesser+" incorrectly guessed "+users.get_guess(guesser,id)+" on "+time
-        numIncorrect=users.get_num_guesses(id)
-        return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, username=user, loggedin=loggedIn())    
+        redir = request.args.get("redir", "/account/notifications")
+        users.read_notification(user, time) #marks as seen = True
+        return redirect(redir) #send them to wherever the notification link says to
     else:
         return redirect(url_for("login_page"))
+
+@app.route('/admin')
+def adminPage():
+    action = request.args.get("action", "")
+    target = request.args.get("for", "")
+    db = sqlite3.connect("data/chillDB.db")
+    c = db.cursor()
+    if action == "unsolve":
+        c.execute("UPDATE drawings SET solved = 0 WHERE id = %s;" % target)
+    elif action == "xguesses":
+        c.execute("DELETE FROM guesses WHERE drawing_id = %s" % target)
+    elif action == "xscore":
+        c.execute("UPDATE users SET guesser_score = 0, artist_score = 0 WHERE username = '%s';" % target)
+    db.commit()
+    db.close()
+    return "You tried <u>" + action + "</u> on <u>" + target + "</u>"
 
 #Log out
 @app.route('/account/logout')

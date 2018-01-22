@@ -14,7 +14,7 @@ Notifications
         {% else %}
         <p>
         {% endif %}
-            <a href="{{noti['link']}}">{{noti["message"]}}</a><br>
+            <a href="/notification/view?time={{noti['timestamp']}}&amp;redir={{noti['link']}}">{{noti["message"]}}</a><br>
             {{ noti["timestamp"] }}
         </p>
     {% endfor %}
