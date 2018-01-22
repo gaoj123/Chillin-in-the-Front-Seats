@@ -1,11 +1,7 @@
 from flask import Flask, flash, render_template, request, session, redirect, url_for
 import sqlite3
 import utils.users as users
-#import utils.drawings as draw
-
-#import utils.dict as dict
 import random
-#import utils.clarifaiCall as clar
 
 app = Flask(__name__)
 app.secret_key = "THIS IS NOT SECURE"
@@ -218,9 +214,9 @@ def score():
             if guess["username"]==user:
                 time=guess["when"]
         if correctOrNot:
-            users.add_notification_for(users.get_artist(id),user+" guessed your drawing of '" + correct + "' correctly", "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id),user+" guessed your drawing of \"" + correct + "\" correctly", "/draw/view?id="+id)
         else:
-            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed '"+guesserResponse+"' on your drawing of '" + correct + "'", "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed \""+guesserResponse+"\" on your drawing of \"" + correct + "\"", "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
