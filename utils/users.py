@@ -1,4 +1,5 @@
 import sqlite3 #enables control of an sqlite database
+import drawings as draw
 
 #-------------------------------------------------------------
 ##############################
@@ -66,8 +67,8 @@ def get_user_stats(username):
     db.close()
     if user_as_tuple != None:
         user_stats = tuple_to_dictionary(user_as_tuple, ["username", "pfp", "best_image", "worst_image", "guesser_score", "artist_score"])
-        user_stats["best_image"] = get_image(user_stats["best_image"])
-        user_stats["worst_image"] = get_image(user_stats["worst_image"])
+        user_stats["best_image"] = draw.get_image(user_stats["best_image"])
+        user_stats["worst_image"] = draw.get_image(user_stats["worst_image"])
         user_stats["number_drawings"] = number_drawings
         return user_stats
     return {}
@@ -159,25 +160,25 @@ def get_gscore(username):
     return get_user_stats(username)["guesser_score"]
 #Returns the username of who made the drawing
 def get_artist(drawing_id):
-    return get_image(drawing_id)["artist"]
+    return draw.get_image(drawing_id)["artist"]
 #Returns the number of incorrect guesses submitted for a drawing
 def get_num_guesses(drawing_id):
-    image = get_image(drawing_id)
+    image = draw.get_image(drawing_id)
     if image["solved"] == True:
         return len(image["guesses"]) - 1
     return len(image["guesses"])
 #Returns the username of whoever solved the drawing. Assumes that the drawing is solved.
 def who_guessed_it(drawing_id):
-    return get_image(drawing_id)["guesses"][-1]["username"]
+    return draw.get_image(drawing_id)["guesses"][-1]["username"]
 #Returns the score for an individual drawing. Assumes that the drawing is solved.
 def get_dscore(drawing_id):
-    return 21 - len(get_image(drawing_id)["guesses"])
+    return 21 - len(draw.get_image(drawing_id)["guesses"])
 #Returns the answer given a drawing id
 def get_answer(drawing_id):
-    return get_image(drawing_id)["word"]
+    return draw.get_image(drawing_id)["word"]
 #Returns a user's guess for an image, or None if they haven't guessed yet
 def get_guess(username, drawing_id):
-    for guess in get_image(drawing_id)["guesses"]:
+    for guess in draw.get_image(drawing_id)["guesses"]:
         if guess["username"] == username:
             return guess["guess"]
     return None
