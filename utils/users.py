@@ -120,7 +120,7 @@ def add_guess(username, drawing_id, guess):
     c.execute("INSERT INTO guesses VALUES ('%s', %d, '%s', datetime('now'));" % (username, drawing_id, guess))
     if was_guess_correct == True:
         c.execute("UPDATE drawings SET solved = 1 WHERE id = %d;" % drawing_id)
-        c.execute("UPDATE users SET guesser_score = guesser_score + 1 WHERE username = '%s';" % username)
+        c.execute("UPDATE users SET guesser_score = guesser_score + 5 WHERE username = '%s';" % username)
         predecessors = c.execute("SELECT count(*) FROM guesses WHERE drawing_id = %d;" % drawing_id).fetchone()
         if predecessors == None or len(predecessors) == 0:
             predecessors = 0

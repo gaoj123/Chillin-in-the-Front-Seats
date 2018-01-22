@@ -5,10 +5,17 @@ Guess
 {% endblock %}
 
 {% block body %}
+{% if images == [] %}
+<br><br><h1>No drawings to guess at this time</h1>
+{% else %}
+<br><br><h1>Guess Drawings</h1>
 {% for image in images %}
-<p><a href="/guess/choice?id="+{{image["id"]}}>
-<img src="{{image["image"]}}">
+{% set id = image["id"] %}
+{% set link = image["image"] %}
+<p><a href="/guess/choice?id={{id}}">
+<img src="{{link}}">
 </a>
 </p>
 {% endfor %}
+{% endif %}
 {% endblock %}

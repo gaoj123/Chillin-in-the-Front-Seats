@@ -94,6 +94,22 @@ def guessed():
     else:
         return redirect(url_for("login_page"))
 
+#View each individual drawing by other users that you guessed
+@app.route('/guessed/view', methods=["POST"])
+def viewGuessed():
+    if loggedIn():
+        user=session["username"]
+        id=request.form["id"]
+        userGuess=users.get_guess(user, id)
+        answ=users.get_answer(id)
+        if userGuess.lower()==ans.lower():
+            status="You guessed correctly!"
+        else:
+            status="Sorry, incorrect"
+        return render_template("viewGuessed.html", username=user, word=answ, message=status, response=userGuess, loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
+
 #User submits drawing
 @app.route('/draw/submit', methods=["POST"])
 def submitted():
@@ -110,8 +126,9 @@ def submitted():
 @app.route('/account/profile')
 def profile_route():
     if loggedIn():
+        user=session["username"]
         udict = users.get_user_stats(session["username"]);
-        return render_template("profile.html", pfp=udict["pfp"],username=session["username"], loggedin=loggedIn(), best=udict["best_image"]["image"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=udict["artist_score"], guesserScore=udict["guesser_score"])
+        return render_template("profile.html", pfp=udict["pfp"],username=user, loggedin=loggedIn(), best=udict["best_image"]["image"], worstScore=users.get_dscore(udict["worst_image"]["id"]), bestScore=users.get_dscore(udict["best_image"]["id"]), bestId=udict["best_image"]["id"], worstId=udict["worst_image"]["id"], worst=udict["worst_image"]["image"], number=udict["number_drawings"], artistScore=users.get_ascore(user), guesserScore=users.get_gscore(user))
     else:
         return redirect(url_for("login_page"))
 
@@ -120,7 +137,7 @@ def profile_route():
 def guess():
     if loggedIn():
         user=session["username"]
-        imgList=draw.random_drawings(user)
+        imgList=users.random_drawings(user, 5)
         return render_template("guess.html", username=user, loggedin=loggedIn(), images=imgList)
     else:
         return redirect(url_for("login_page"))
@@ -138,6 +155,25 @@ def chooseWord():
     else:
         return redirect(url_for("login_page"))
 
+#User chooses to update profile pic
+@app.route('/update/profile')
+def updatePFP():
+    if loggedIn():
+        return render_template("updatePFP.html", username=session["username"], loggedin=loggedIn())
+    else:
+        return redirect(url_for("login_page"))
+
+#User updates profile pic
+@app.route('/update/profilePic', methods=["POST"])
+def updateLink():
+    if loggedIn():
+        url=request.form["link"]
+        user=session["username"]
+        users.update_pfp(user, url)
+        return redirect(url_for("profile_route"))
+    else:
+        return redirect(url_for("login_page"))
+
 #User draws on canvas
 @app.route('/draw/canvas')
 def draw():
@@ -148,11 +184,11 @@ def draw():
         return redirect(url_for("login_page"))
 
 #User choice for guessing other user's image
-@app.route('/guess/choice', methods=["POST"])
+@app.route('/guess/choice', methods=["POST","GET"])
 def choice():
     if loggedIn():
-        ID=request.form["id"]
-        imageLink=draw.get_image(ID)
+        ID=request.args["id"]
+        imageLink=users.get_image(ID)["image"]
         return render_template("guessChoice.html", id=ID, link=imageLink, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -165,17 +201,33 @@ def score():
         user = session["username"]
         guesserResponse=request.form["guess"]
         users.add_guess(user, id, guesserResponse) 
-        correct=get_image(id)["word"]
+        correct=users.get_image(id)["word"]
         correctOrNot=guesserResponse.lower()==correct.lower()
         if correctOrNot:
-            users.add_notification_for(insertUser,user+" guessed your drawing correctly", "/draw/view?id="+id)
+            users.add_notification_for(users.get_artist(id),user+" guessed your drawing correctly", "/draw/view?id="+id)
+        else:
+            users.add_notification_for(users.get_artist(id), user+" incorrectly guessed "+guesserResponse, "/draw/view?id="+id)
         return render_template("score.html", accuracy=correctOrNot, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
-#View image (associated with notification)
-#@app.route('/draw/view')
-#def view():
+#View image individually, provides info like how many people guessed your drawing incorrectly and who guessed it correctly if it has been solved
+@app.route('/draw/view', methods=["POST", "GET"])
+def view():
+    if loggedIn():
+        id=request.args["id"];
+        user=session["username"]
+        if users.get_image(id)["solved"]==True:
+            score="Score: "+str(users.get_dscore(id))
+            correctGuesser=users.who_guessed_it(id)
+            message=correctGuesser+" guessed your drawing correctly"
+        else:
+            message=""
+            score=""
+        numIncorrect=users.get_num_guesses(id)
+        return render_template("view.html", link=users.get_image(id)["image"], word=users.get_image(id)["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, username=user, loggedin=loggedIn())    
+    else:
+        return redirect(url_for("login_page"))
     
 
 #Log out

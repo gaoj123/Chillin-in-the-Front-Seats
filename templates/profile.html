@@ -6,6 +6,7 @@ User Profile
 
 {% block body %}
 <br><br><br><h1>Profile</h1>
+<a href="/update/profile">Update Profile</a>
 <div class="container">
     <div class="row">
         <div class="col col-md-4"><img src="{{pfp}}"></div>
@@ -15,7 +16,9 @@ User Profile
 <h2>Artist Score: {{artistScore}}</h2><br>
 <h2>Guesser Score: {{guesserScore}}</h2><br>
 <h3>Best Drawing:</h3><br>
-<img src="{{best}}"><br>
+<a href="/draw/view?id={{bestId}}"><img src="{{best}}"></a><br>
+<h5>Score: {{bestScore}}</h5><br><hr><br>
 <h3>Worst Drawing:</h3><br>
-<img src="{{worst}}">
+<a href="/draw/view?id={{worstId}}"><img src="{{worst}}"></a>
+<h5>Score: {{worstScore}}</h5>
 {% endblock %}

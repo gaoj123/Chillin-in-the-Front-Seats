@@ -3,10 +3,12 @@
 {% block title %}
 Guessing Image
 {% endblock %}
+{% block body %}
 <h1>What do you think this object is?</h1>
 <img src="{{link}}">
-<form action="/guess/score?id={{id}}">
-   Object: <input type="text" name="guess"> 
+<form method="POST" action="/guess/score?id={{id}}">
+  Object: <input type="text" name="guess">
+  <input type="hidden" name="id" value="{{id}}">
   <input type="submit" value="Submit">
 </form>
-{% block body %}
+{% endblock %}

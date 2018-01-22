@@ -7,6 +7,6 @@ Gallery
 {% block body %}
 {% for pic in pics %}
 {% set picLink = pic["image"] %}
-<img src="{{picLink}}">
+<a href="/draw/view?id="+pic["id"]><img src="{{picLink}}"></a>
 {% endfor %}
 {% endblock %}
