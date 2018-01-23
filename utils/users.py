@@ -170,7 +170,7 @@ def get_guessed_images(username):
 def get_images_by(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    results = c.execute("SELECT images FROM drawings WHERE username='%s';")%(username).fetchall()
+    results = c.execute("SELECT image FROM drawings WHERE username='%s';")%(username).fetchall()
     print results
     
     
