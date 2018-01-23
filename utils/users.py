@@ -81,7 +81,10 @@ def update_scores_for(username, db):
     username = username.replace("'", "''")
     min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
     max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    print "min id " + str(min_score_id[0]) + " with " + str(min_score_id[1])
+    print "max id " + str(max_score_id[0]) + " with " + str(max_score_id[1])
     if (min_score_id == None) or (None in min_score_id):
+        print "quitting"
         return
     else: 
         c.execute("UPDATE users SET best_img_id = %d  WHERE username = '%s';" % (min_score_id[0], username))
@@ -269,7 +272,7 @@ def who_guessed_it(drawing_id):
     return draw.get_image(drawing_id)["guesses"][-1]["username"]
 #Returns the score for an individual drawing. Assumes that the drawing is solved.
 def get_dscore(drawing_id):
-    return 21 - len(draw.get_image(drawing_id)["guesses"])
+    return 20 - get_num_guesses(drawing_id)
 #Returns the answer given a drawing id
 def get_answer(drawing_id):
     return draw.get_image(drawing_id)["word"]

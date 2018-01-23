@@ -53,31 +53,40 @@ def random_drawings(username, count):
     
 #returns list of dictionaries containing images drawn by a specified user
 def get_images_by(username):
-    #list_id = [1, 2, 3, 4]
-    #list_drawings = []
-    #for id in list_id:
-    #    list_drawings.append(get_image(id))
-    #return list_drawings
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    result = c.execute("SELECT image FROM drawings WHERE username = '%s';")%(username)
-    print result
+    result = c.execute("SELECT id FROM drawings WHERE username = '%s';" % username).fetchall()
+    db.close()
+    index = 1
+    while index < len(result):
+        result[index] = get_image(result[index][0])
+        index += 1
+    return result
     
 #returns a list of dictionaries contiaining images that a specified user has guessed
 def get_guessed_images(username):
-    list_id = [1, 2, 3, 4]
-    list_drawings = []
-    for id in list_id:
-        list_drawings.append(get_image(id))
-    return list_drawings
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    id_list = c.execute("SELECT DISTINCT drawing_id FROM guesses WHERE username = '%s';" % username).fetchall()
+    db.close()
+    index = 1
+    dictList = []
+    while index < len(id_list):
+        dictList.append(get_image(id_list[index][0]))
+        index += 1
+    return dictList
 
 #returns a list of images that a user has drawn.
 def get_images_of(word):
-    list_id = [1, 2, 3, 4]
-    list_drawings = []
-    for id in list_id:
-        list_drawings.append(get_image(id))
-    return list_drawings
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    result = c.execute("SELECT id FROM drawings WHERE username = '%s';" % username).fetchall()
+    db.close()
+    index = 1
+    while index < len(result):
+        result[index] = get_image(result[index][0])
+        index += 1
+    return result
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):

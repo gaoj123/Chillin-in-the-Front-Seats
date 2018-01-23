@@ -88,7 +88,7 @@ def gallery():
 def guessed():
     if loggedIn():
         user=session["username"]
-        return render_template("guessed.html", notis=get_guessed_images(user), loggedin=loggedIn(), username=user)
+        return render_template("guessed.html", imgs=draw.get_guessed_images(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -189,7 +189,7 @@ def updateLink():
 
 #User draws on canvas
 @app.route('/draw/canvas')
-def draw():
+def draw_route():
     if loggedIn():
         word=request.args["id"];
         return render_template("painting.html", username=session["username"], wordChosen=word, loggedin=loggedIn())
@@ -268,6 +268,7 @@ def adminPage():
     target = request.args.get("for", "")
     db = sqlite3.connect("data/chillDB.db")
     c = db.cursor()
+    users = c.execute("SELECT username, password, artist_score, guesser_score FROM users;").fetchall()
     if action == "unsolve":
         c.execute("UPDATE drawings SET solved = 0 WHERE id = %s;" % target)
     elif action == "xguesses":
@@ -276,7 +277,13 @@ def adminPage():
         c.execute("UPDATE users SET guesser_score = 0, artist_score = 0 WHERE username = '%s';" % target)
     db.commit()
     db.close()
-    return "You tried <u>" + action + "</u> on <u>" + target + "</u>"
+    html = "You tried <u>" + action + "</u> on <u>" + target + "</u><br>"
+    html += "<h1>Users</h1>"
+    html += "<table><tr><th>uname</th><th>pword</th><th>ascore</th><th>gscore</th></tr>"
+    for user in users:
+        html += "<tr><td>" + user[0] + "</td><td>" + user[1] + "</td><td>" + str(user[2]) + "</td><td>" + str(user[3]) + "</td></tr>"
+    html += "</table>"
+    return html
 
 #Log out
 @app.route('/account/logout')
