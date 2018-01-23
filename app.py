@@ -81,11 +81,23 @@ def gallery():
         user=session["username"]
         idList=[]
         incorrectGuessesList=[]
+        solvedList=[]
+        messageList=[]
+        wordList=[]
+        imgList=[]
         for pic in users.get_images_by(user):
             idList.append(pic["id"])
+            if pic["solved"]:
+                solvedList.append("solved")
+            else:
+                solvedList.append("unsolved")
+            wordList.append(pic["word"])
+            imgList.append(pic["image"])
         for Id in idList:
             incorrectGuessesList.append(users.get_num_guesses(Id))
-        return render_template("gallery.html", idL=idList, numIncorrect=incorrectGuessesList, pics=users.get_images_by(user), loggedin=loggedIn(), username=user)
+        for i in range(len(idList)):
+            messageList.append(str(wordList[i])+": "+str(incorrectGuessesList[i])+" incorrect guesses, "+solvedList[i])
+        return render_template("gallery.html", imgL=imgList, idL=idList, messages=messageList, pics=users.get_images_by(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 

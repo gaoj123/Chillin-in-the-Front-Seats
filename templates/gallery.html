@@ -5,21 +5,14 @@ Gallery
 {% endblock %}
 
 {% block body %}
-{{pics}}
-{% set i = 0 %}
-{% for pic in pics %}
-{% set picLink = pic["image"] %}
-<a href="/draw/view?id={{pic['id']}}">
+{% for i in range(messages|length) %}
+{% set picLink = imgL[i] %}
+<a href="/draw/view?id={{idL[i]}}">
     <img src="{{picLink}}"><br>
     <caption>
-      {{numIncorrect[i]}}
-      {{idL[i]}}
-      {{ pic['word'] }}:
-        {{ pic['guesses']|length }} guesses,
-        {% if pic['solved'] %} solved {% else %} unsolved {% endif %}
+      {{messages[i]}}
     </caption>
 </a>
 <br>
-{% set i = i + 1 %}
 {% endfor %}
 {% endblock %}
