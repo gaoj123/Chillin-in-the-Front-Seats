@@ -106,7 +106,31 @@ def gallery():
 def guessed():
     if loggedIn():
         user=session["username"]
-        return render_template("guessed.html", imgs=users.get_guessed_images(user), loggedin=loggedIn(), username=user)
+        linkList=[]
+        timeList=[]
+        guessList=[]
+        correctOrNot=[]
+        solvedOrNot=[]
+        msgList=[]
+        idList=[]
+        for image in users.get_guessed_images(user):
+            idImage=image["drawing_id"]
+            idList.append(idImage)
+            linkList.append((users.get_image(idImage)["image"]))
+            timeList.append(image["timestamp"])
+            if users.get_image(idImage)["solved"]:
+                solvedOrNot.append("Solved")
+                if users.get_guess(user, idImage).lower()==users.get_image(idImage)["word"].lower():
+                    guessList.append("Correct Guess: "+users.get_image(idImage)["word"])
+                    correctOrNot.append("Correct")
+                else:
+                    correctOrNot.append("Incorrect")
+                    guessList.append("Your Incorrect Guess: "+image["guess"])
+            else:
+                solvedOrNot.append("Unsolved")
+                correctOrNot.append("Incorrect")
+                guessList.append("Your Incorrect Guess: "+image["guess"])
+        return render_template("guessed.html", idL=idList, links=linkList, correctOrNotList=correctOrNot, solvedOrNotList=solvedOrNot, guesses=guessList, time=timeList, imgs=users.get_guessed_images(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -262,7 +286,7 @@ def view():
         if image['solved'] == False:
             return render_template("view.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
         else:
-            return render_template("viewSolved.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
+            return render_template("viewSolved.html", correctOrNot=users.get_image(id)["solved"], link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
