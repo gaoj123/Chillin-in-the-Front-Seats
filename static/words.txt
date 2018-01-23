@@ -210,13 +210,11 @@ Shovel
 Teddy Bear
 Washing Machine
 Clock
-Brocolli
 Carrot
 Apple
 Pineapple
 Grapes
 Banana
-Candle
 Spoon
 Pencil
 Speaker
@@ -226,4 +224,3 @@ Sailboat
 Book
 Magnet
 Cell Phone
-Twister the Game
