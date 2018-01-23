@@ -6,7 +6,11 @@ Viewing Image
 
 {% block body %}
 <br><br><br>
+{% if correctOrNot %}
 <h1>{{word}}</h1>
+{% else %}
+<h1>Drawing Has Not Been Solved</h1>
+{% endif %}
 <img src="{{link}}">
 <h5>{{scoreSolved}}</h5>
 <br>

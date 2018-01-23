@@ -6,9 +6,14 @@ Guesses
 
 {% block body %}
 <h1>Guessed Drawings</h1>
-{% for img in imgs %}
-{{img["image"]}}
-{% set imgLink = img["image"] %}
-<img src="{{imgLink}}">
+{% for i in range(time|length) %}
+{% set imgLink = links[i] %}
+<a href="/draw/view?id={{idL[i]}}"><img src="{{imgLink}}"></a>
+<p>Time: {{time[i]}}</p>
+{% if correctOrNotList[i]=="Incorrect" %}
+<p style="color:red;">{{guesses[i]}}</p>
+{% else %}
+<p>{{guesses[i]}}</p>
+{% endif %}
 {% endfor %}
 {% endblock %}
