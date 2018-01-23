@@ -79,7 +79,13 @@ def notifications():
 def gallery():
     if loggedIn():
         user=session["username"]
-        return render_template("gallery.html", pics=draw.get_images_by(user), loggedin=loggedIn(), username=user)
+        idList=[]
+        incorrectGuessesList=[]
+        for pic in users.get_images_by(user):
+            idList.append(pic["id"])
+        for Id in idList:
+            incorrectGuessesList.append(users.get_num_guesses(Id))
+        return render_template("gallery.html", idL=idList, numIncorrect=incorrectGuessesList, pics=users.get_images_by(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -88,7 +94,7 @@ def gallery():
 def guessed():
     if loggedIn():
         user=session["username"]
-        return render_template("guessed.html", imgs=draw.get_guessed_images(user), loggedin=loggedIn(), username=user)
+        return render_template("guessed.html", imgs=users.get_guessed_images(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -143,7 +149,7 @@ def profile_route():
 def guess():
     if loggedIn():
         user=session["username"]
-        imgList=users.random_drawings(user, 5)
+        imgList=users.random_drawings(user, 6)
         return render_template("guess.html", username=user, loggedin=loggedIn(), images=imgList)
     else:
         return redirect(url_for("login_page"))
@@ -152,17 +158,15 @@ def guess():
 @app.route('/draw/new')
 def chooseWord():
     if loggedIn():
+        user=session["username"]
         wordChoices=[];
+        wordsChosenAlready=[]
+        for chosen in users.get_images_by(user):
+            wordsChosenAlready.append(chosen["word"])
         while len(wordChoices)<5:
             word=random.choice(wordlist);
-            #wordsChosenAlready=[]
-            #for chosen in draw.get_images_by(user):
-                #wordsChosenAlready.append(chosen["word"])
-            while len(wordChoices)<5:
-                word=random.choice(wordlist);
-                #if word not in wordChoices and word not in wordsChosenAlready:
-                if word not in wordChoices:
-                    wordChoices.append(word)
+            if word not in wordChoices and word not in wordsChosenAlready:
+                wordChoices.append(word)
         return render_template("chooseWord.html", words=wordChoices, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
