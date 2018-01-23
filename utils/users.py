@@ -175,10 +175,11 @@ def get_guessed_images(username):
 def get_images_by(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    results = c.execute("SELECT image FROM drawings WHERE username='%s';"%(username))
+    results = c.execute("SELECT image, word, id, solved FROM drawings WHERE username='%s';"%(username))
     images = []
     for row in results:
-        images.append(row)
+        image_dict = tuple_to_dictionary(row, ["image", "word", "id", "solved"])
+        images.append(image_dict)
     return images
     
 #Returns a list of the images with this word as their answer. Each item is a dictionary in the format of get_image()
