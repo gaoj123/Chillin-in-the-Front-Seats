@@ -168,11 +168,12 @@ def get_guessed_images(username):
 
 #Returns a list of the images the user has drawn. Each item is a dictionary in the format of get_image()
 def get_images_by(username):
-    list_id = [1, 2, 3, 4]
-    list_drawings = []
-    for id in list_id:
-        list_drawings.append(get_image(id))
-    return list_drawings
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    results = c.execute("SELECT images FROM drawings WHERE username='%s';")%(username).fetchall()
+    print results
+    
+    
 
 #Returns a list of the images with this word as their answer. Each item is a dictionary in the format of get_image()
 def get_images_of(word):
