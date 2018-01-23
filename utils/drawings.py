@@ -78,3 +78,12 @@ def get_images_of(word):
     for id in list_id:
         list_drawings.append(get_image(id))
     return list_drawings
+
+#Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
+def tuple_to_dictionary(tuuple, list_of_keys):
+    d = {} #the dictionary
+    index = 0 #the column index
+    while index < len(tuuple):
+        d[ list_of_keys[index] ] = tuuple[index]
+        index += 1
+    return d

@@ -11,56 +11,72 @@
 {% endblock %}
 {% block body %}
     <div id="header">
+      <center>
         <h1>{{ wordChosen }}</h1>
+      </center>
     </div>
+    <br>
     <!-- The dimensions of the canvas must be set explicitly, can't use %, otherwise it will look blurry and not work -->
-    <canvas id="canvas" width="600" height="400"></canvas>
-    <hr>
-    <div id="button-panel">
-      Color: <input type="color" id="myColor"> <br>
-      Line Thickness: <input type="range" id="thickness" min="1" max="20" value="5"><br>
-        <a id="clear">Click me to Start Over</a><br>
+<div class="container">
+  <div class="row">
+    <div class="col-8">
+      <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
+    <div class="col-4">
+      <div id="button-panel">
+        Color: <input type="color" id="myColor"> <br>
+        Line Thickness: <input type="range" id="thickness" min="1" max="20" value="5"><br>
         Select tool:<br>
 
-	<div class="custom-control custom-radio">
-	  <input id="radio1" name="tool" value="brush" type="radio" class="custom-control-input">
-	  <span class="custom-control-indicator"></span>
-	  <span class="custom-control-description">Brush</span>
-	</div>
-	
-	<div class="custom-control custom-radio">
-	  <input id="radio1" name="tool" value="fill" type="radio" class="custom-control-input">
-	  <span class="custom-control-indicator"></span>
-	  <span class="custom-control-description">Fill Bucket</span>
-	</div>
+        <div class="form-check">
+          <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios1" value="brush">
+          Brush
+          </label>
+        </div>
 
-	<div class="custom-control custom-radio">
-	  <input id="radio1" name="tool" value="select" type="radio" class="custom-control-input">
-	  <span class="custom-control-indicator"></span>
-	  <span class="custom-control-description">Dropper</span>
-	</div>
+        <div class="form-check">
+          <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios2" value="fill">
+          Fill Bucket
+          </label>
+        </div>
 
-	<label class="custom-control custom-radio">
-	  <input id="radio1" name="tool" value="bomb" type="radio" class="custom-control-input">
-	  <span class="custom-control-indicator"></span>
-	  <span class="custom-control-description">Make all one color</span>
-	</label>
+        <div class="form-check">
+          <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios3" value="select">
+          Dropper
+          </label>
+        </div>
 
-	<label class="custom-control custom-radio">
-	  <input id="radio1" name="tool" value="replace" type="radio" class="custom-control-input">
-	  <span class="custom-control-indicator"></span>
-	  <span class="custom-control-description">Replace Color</span>
-	</label>
+        <div class="form-check">
+          <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios5" value="bomb">
+          Make all one color
+          </label>
+        </div>
 
-        <!-- maybe add some divs here that control the color of the brush,
-             and each div is the background color which it will change the brush tp -->
+        <div class="form-check">
+          <label class="form-check-label">
+          <input type="radio" class="form-check-input" name="optionsRadios" id="optionsRadios5" value="replace">
+          Replace Color
+          </label>
+        </div>
+
+        <br>
+        <br>
+        <input id="clear" value="Start Over" class="btn btn-outline-warning btn-lg btn-block"> <br>
+          <form action="/draw/submit" method="POST" id="done" class="ml-auto">
+            <input type="hidden" name="word" value="{{wordChosen}}">
+            <input type="submit" value="Submit Drawing" class="btn btn-outline-success btn-lg btn-block">
+            <!-- When the button is pressed, JS will use ninja powers to attach an <input type=hidden>
+                 to the form. It will be called "image" and contain canvas data as a string -->
+        </form>
+      </div>
     </div>
-    <form action="/draw/submit" method="POST" id="done">
-        <input type="hidden" name="word" value="{{wordChosen}}">
-        <input type="submit" value="Submit Drawing">
-        <!-- When the button is pressed, JS will use ninja powers to attach an <input type=hidden>
-             to the form. It will be called "image" and contain canvas data as a string -->
-    </form>
+  </div>
+</div>
+
     <!--<script type="text/javascript" src="../static/painting.js" />-->
     <script>
       //Important Variables~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +150,7 @@
         });
     }
     //Useful functions~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
+
     var changeThickness = function(t) {
         ctx.lineWidth = t;
         ctx.lineCap = "round";
