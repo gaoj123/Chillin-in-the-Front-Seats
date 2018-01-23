@@ -5,7 +5,9 @@ Guesses
 {% endblock %}
 
 {% block body %}
+<h1>Guessed Drawings</h1>
 {% for img in imgs %}
+{{img["image"]}}
 {% set imgLink = img["image"] %}
 <img src="{{imgLink}}">
 {% endfor %}
