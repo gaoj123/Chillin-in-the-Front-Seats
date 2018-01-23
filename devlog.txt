@@ -90,3 +90,6 @@ Worked on guess and notifications routes and did Jinja/HTML.  These are currentl
 
 gaoJ -- 2018-01-22 10:55
 Fixed profile's best/worst image score to address all cases of "N/A".  Also modified what's displayed on the page when a user clicks on a notification to show the same message.  In addition, time is now included in notifications.
+
+gaoJ -- 2018 01-23 12:03
+Fixed gallery and guessed images routes/HTML files.  Also modified view.html so that the word only appears as a heading if it has been solved.  Uploaded new design document with updated site map.
