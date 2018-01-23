@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+    {% block content1 %}
+<center>
+<h1 class="display-4"> CHANGE PROFILE </h1>
+    <div class = "col-md-5 container login">
+      <form method="POST" action="/update/profilePic">
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% endwith %}
+      <div class="form-group">
+        <label> Profile Picture </label>
+        <input type="text" name="pfp" class="form-control" placeholder="Enter URL to Image">
+      </div>
+
+      <div class = "form-group">
+	<input type="submit" name="login" value="Submit" class="btn btn-outline-success">
+      </div>
+
+    </form>
+    </div>
+</center>
+    {% endblock %}
+    {% endblock %}
