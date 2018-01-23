@@ -18,7 +18,7 @@ Drawnet is a website where users can play a game similar to Pictionary.  Users h
 One word in our word list causes an ascii error (this happens about 1 in 100 times when the user goes on the "Draw" route and chooses an object to draw).  If this happens, please refresh the "Draw" ("Choose Word") page.<br>
 
 ### Note
-Our system does not allow for singular/plural variants of the answer (word/object chosen to draw).  
+Our system does not allow for synonyms and singular/plural variants of the answer (object chosen to draw).  For example, if the correct answer is "fire", "flame" will be deemed incorrect.  Another example would be "flowers" - "flower" would be incorrect.
 
 ### Created Accounts
 You can log onto these pre-existing accounts: <br>
