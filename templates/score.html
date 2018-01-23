@@ -5,12 +5,21 @@ Score
 {% endblock %}
 
 {% block body %}
-<h1>Score:</h1>
+
+<br>
+<center>
+<div class="card" style="width: 30rem; padding-bottom: 25px; padding-top: 25px; padding-left: 15px; padding-right: 15px;">
+
 {% if accuracy %}
-<h2>Correct!</h2>
-<h3>+ 5 Points!</h3>
+<h1 class="display-4">Correct!</h1>
+<p class="lead">+5 Points!</p>
 {% else %}
-<h2>Sorry, incorrect!</h2>
+<h1 class="display-4">Sorry, Incorrect!</h1>
+<p class="lead">+0 Points :(</p>
 {% endif %}
-<a class="btn btn-outline-success btn-lg" href="/guess" role="button">Guess Other Drawings</a>
+
+<a class="btn btn-outline-success" href="/guess" role="button">Guess Other Drawings</a>
+</div>
+</center>
+
 {% endblock %}

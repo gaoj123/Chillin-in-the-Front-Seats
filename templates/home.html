@@ -3,38 +3,45 @@
 {{title }}
 {% endblock %}
 {% block body %}
+{% if loggedin %}
 <center>
-<div class="jumbotron">
+<div class="jumbotron" style="margin-top: -26px;">
   <h1 class="display-4"> Welcome to DrawNet! </h1>
   <p class="lead">Here goes a short description of our project</p>
   <hr class="my-4">
   <p class="lead">
-    {% if loggedin %}
-    <p> Play! </p>
-<div class="container">
-      <div class="row">
-	<div class="col">
-	  <a class="btn btn-outline-success btn-lg float-right" href="/draw/new" role="button">Draw</a>
-	</div>
-	<div class = "col">
-	  <a class="btn btn-outline-success btn-lg float-left" href="/guess" role="button">Guess</a>
-	</div>
-	{% else %}
-	<p> Get Started! </p>
-    <div class="container">
-      <div class="row">
-	<div class="col">
-	  <a class="btn btn-outline-success btn-lg float-right" href="/account/login" role="button">Log In</a>
-	</div>
-	<div class = "col">
-	  <a class="btn btn-outline-success btn-lg float-left" href="/account/create" role="button">Create an Account</a>
-	</div>
-	{% endif %}
-    </div>
-    </div>
-
-  </p>
+  <div class="container">
+    <div class="row">
+	     <div class="col">
+	        <a class="btn btn-outline-success btn-lg float-right" href="/draw/new" role="button">DRAW</a>
+	     </div>
+	     <div class = "col">
+	        <a class="btn btn-outline-success btn-lg float-left" href="/guess" role="button">GUESS</a>
+	     </div>
+	  </div>
+  </div>
 
 </div>
 </center>
+{% else %}
+<center>
+<div class="jumbotron" style="margin-top: -26px;">
+  <h1 class="display-4"> Welcome to DrawNet! </h1>
+  <p class="lead">Here goes a short description of our project</p>
+  <hr class="my-4">
+  <p class="lead">
+  <div class="container">
+    <div class="row">
+	     <div class="col">
+	        <a class="btn btn-outline-success btn-lg float-right" href="/account/login" role="button">Log In</a>
+	     </div>
+	     <div class = "col">
+	        <a class="btn btn-outline-success btn-lg float-left" href="/account/create" role="button">Create an Account</a>
+	     </div>
+	  </div>
+  </div>
+
+</div>
+</center>
+{% endif %}
 {% endblock %}

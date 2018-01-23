@@ -7,13 +7,18 @@
 }
 
 .body {
-  padding-left: 1100px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .card_label {
-  width: 30rem;
+  background-color: red;
   padding-bottom: 15px;
   padding-top: 15px;
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.profile_heading {
+  padding-left: 10px;
 }

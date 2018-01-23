@@ -4,11 +4,18 @@
 Guessing Image
 {% endblock %}
 {% block body %}
-<h1>What do you think this object is?</h1>
+<center>
+<h1 class="display-4">What do you think this object is?</h1>
+<br>
 <img src="{{link}}">
+<br>
+<br>
 <form method="POST" action="/guess/score?id={{id}}">
-  Object: <input type="text" name="guess">
-  <input type="hidden" name="id" value="{{id}}">
-  <input type="submit" value="Submit">
+  <h5> Object: </h5>
+  <input type="text" name="guess" class="form-control" style="width: 40%;">
+  <input type="hidden" class="form-control" name="id" value="{{id}}">
+  <br>
+  <input class="btn btn-outline-success btn-lg" type="submit" value="Submit">
 </form>
+</center>
 {% endblock %}

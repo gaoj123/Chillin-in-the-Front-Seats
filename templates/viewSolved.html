@@ -5,15 +5,22 @@ Viewing Image
 {% endblock %}
 
 {% block body %}
-<br><br><br>
-<h1>{{word}}</h1>
+
+<center>
+<h1 class="display-4">{{word}}</h1>
+<hr>
+<div class="card" style="border-width: 5px; border-color: #90a4ae; width:600px;">
 <img src="{{link}}">
+</div>
+<br>
 <h5>{{scoreSolved}}</h5>
 <br>
-<h5>Incorrect Guesses: {{incorrectGuessesNum}}</h5><br><br>
-<ol>
+<h5>Incorrect Guesses: {{incorrectGuessesNum}}</h5><br>
+<ul class="list-group">
 {% for guess in guesses %}
-    <li>{{ guess['username'] }} guessed {{ guess['guess'] }} on {{ guess['when'] }}
+    <li class="list-group-item" style="width: 50%;">{{ guess['username'] }} guessed {{ guess['guess'] }} on {{ guess['when'] }}
 {% endfor %}
-</ol>
+</ul>
+</center>
+
 {% endblock %}

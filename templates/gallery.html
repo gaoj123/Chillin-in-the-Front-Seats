@@ -5,14 +5,32 @@ Gallery
 {% endblock %}
 
 {% block body %}
+<center>
+<h1 class="display-4"> YOUR DRAWINGS </h1>
+<br>
+<div class="container">
 {% for i in range(messages|length) %}
-{% set picLink = imgL[i] %}
-<a href="/draw/view?id={{idL[i]}}">
-    <img src="{{picLink}}"><br>
-    <caption>
+<div class="row">
+  <div class="col-7">
+    <div class="card" style="width: 610px; border-width: 5px; border-color: #90a4ae; ">
+    {% set picLink = imgL[i] %}
+    <a href="/draw/view?id={{idL[i]}}">
+      <img src="{{picLink}}"><br>
+    </a>
+  </div>
+  </div>
+  <div class="col-5">
+    {% set picLink = imgL[i] %}
+    <div class="card" style="border-width: 5px; border-color: #cfd8dc; padding-top: 155px; padding-bottom: 155px; padding-left: 30px; padding-right: 30px;">
+    <a href="/draw/view?id={{idL[i]}}" style="font-size: 30px; color: #90a4ae;">
       {{messages[i]}}
-    </caption>
-</a>
+    </a>
+    </div>
+  </div>
+</div>
 <br>
 {% endfor %}
+</div>
+
+</center>
 {% endblock %}

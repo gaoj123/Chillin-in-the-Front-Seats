@@ -5,51 +5,69 @@ User Profile
 {% endblock %}
 
 {% block body %}
-<br>
-<h1 class="display-4">WELCOME, {{ username }}!</h1>
-<div class="container">
-  <div class="row">
-
-  <div class="col-2">
-  </div>
-
-  <div class="col-4">
-  </div>
-
-  <div class="col-4">
-    <div class="card card_label">
-      <center> <h1 class="display-4">WELCOME, {{ username }}!</h1> </center>
-    </div>
-  </div>
-
-  <div class="col-2">
-  </div>
-
-  </div>
+<center>
+<div class="card card_label">
+  <h1 class="display-4">Welcome, {{ username }}!</h1>
 </div>
-
-<a href="/update/profile">Update Profile</a>
+<br>
 <div class="container">
     <div class="row">
-        <div class="col col-md-4"><img src="{{pfp}}"></div>
-        <div class="col"><h1>Welcome, {{ username }}</h1><h3>You made {{ number }} drawings</h3></div>
+        <div class="col">
+          <img src="{{pfp}}" style="max-width: 80%; max-height: 500px;">
+        </div>
     </div>
 </div>
-<h2>Artist Score: {{artistScore}}</h2><br>
-<h2>Guesser Score: {{guesserScore}}</h2><br>
+<hr>
+<a class="btn btn-outline-warning btn-lg btn-block" style="max-width: 80%;" href="/update/profile">Update Profile Picture</a>
+<br>
+<div class="container">
+    <div class="row">
+    <h1 class"display-4"> <center> SCORES: </center> </h1>
+  </div>
+  <div class="row">
+     <div class="col">
+        <h3 class="float-right">Artist | {{artistScore}}</h3>
+     </div>
+     <div class = "col">
+        <h3 class="float-left">{{guesserScore}} | Guesser</h3>
+     </div>
+  </div>
+</div>
 
-<h3>Best Drawing:</h3><br>
-{% if bestScore == "N/A" %}
-<img src="{{best}}">
-{% else %}
-<a href="/draw/view?id={{bestId}}"><img src="{{best}}"></a><br>
-{% endif %}
-<h5>Score: {{bestScore}}</h5><br><hr><br>
-<h3>Worst Drawing:</h3><br>
-{% if worstScore == "N/A" %}
-<img src="{{worst}}">
-{% else %}
-<a href="/draw/view?id={{worstId}}"><img src="{{worst}}"></a>
-{% endif %}
-<h5>Score: {{worstScore}}</h5>
+<br>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 card" style="padding-top: 15px;">
+          <h3>Best Drawing</h3>
+          <hr>
+          <h3 class="text-muted">Score - {{bestScore}}</h3>
+          <br>
+          {% if bestScore == "N/A" %}
+          <img src="{{best}}">
+          {% else %}
+          <a href="/draw/view?id={{bestId}}">
+            <img src="{{best}}">
+          </a>
+          {% endif %}
+          <br>
+        </div>
+        <div class="col-6 card" style="padding-top: 15px;">
+          <h3>Worst Drawing</h3>
+          <hr>
+          <h3 class="text-muted">Score - {{worstScore}}</h3>
+          <br>
+          {% if worstScore == "N/A" %}
+          <img src="{{worst}}">
+          {% else %}
+          <a href="/draw/view?id={{worstId}}">
+            <img src="{{worst}}">
+          </a>
+          {% endif %}
+          <br>
+        </div>
+    </div>
+</div>
+
+</center>
 {% endblock %}

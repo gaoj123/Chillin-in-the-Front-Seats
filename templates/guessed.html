@@ -5,15 +5,39 @@ Guesses
 {% endblock %}
 
 {% block body %}
-<h1>Guessed Drawings</h1>
+<center>
+<h1 class="display-4">GUESSED DRAWINGS</h1>
+<br>
+<div class="container">
 {% for i in range(time|length) %}
 {% set imgLink = links[i] %}
-<a href="/draw/view?id={{idL[i]}}"><img src="{{imgLink}}"></a>
-<p>Time: {{time[i]}}</p>
-{% if correctOrNotList[i]=="Incorrect" %}
-<p style="color:red;">{{guesses[i]}}</p>
-{% else %}
-<p>{{guesses[i]}}</p>
-{% endif %}
+<div class="row">
+  <div class="col-7">
+    <div class="card" style="width: 610px; border-width: 5px; border-color: #90a4ae; ">
+    <a href="/draw/view?id={{idL[i]}}">
+      <img src="{{imgLink}}"><br>
+    </a>
+    </div>
+  </div>
+
+  <div class="col-5">
+    <div class="card" style="border-width: 5px; border-color: #cfd8dc; padding-top: 155px; padding-bottom: 155px; padding-left: 30px; padding-right: 30px;">
+
+      <p style="font-size: 20px;">Time: {{time[i]}}</p>
+      {% if correctOrNotList[i]=="Incorrect" %}
+      <p style="color:red; font-size: 20px;">{{guesses[i]}}</p>
+      {% else %}
+      <p style="color:green; font-size: 20px;">{{guesses[i]}}</p>
+    {% endif %}
+
+    </div>
+  </div>
+
+
+</div>
+<br>
 {% endfor %}
+
+</div>
+</center>
 {% endblock %}

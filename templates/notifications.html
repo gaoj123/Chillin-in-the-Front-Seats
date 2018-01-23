@@ -5,8 +5,9 @@ Notifications
 {% endblock %}
 
 {% block body %}
-<br><br><br>
-<h1>Notifications</h1>
+<center>
+<h1 class="display-4">NOTIFICATIONS</h1>
+<hr>
 {% if notis|length > 0 %}
     {% for noti in notis %}
         {% if noti["seen"] == False %}
@@ -21,4 +22,5 @@ Notifications
 {% else %}
     <b>You don't have notifications yet</b>
 {% endif %}
+</center>
 {% endblock %}

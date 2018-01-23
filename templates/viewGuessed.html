@@ -5,16 +5,22 @@ Viewing Image
 {% endblock %}
 
 {% block body %}
-<br><br><br>
+<center>
+  
 {% if solveOrNot %}
-<h1>{{answ}}</h1>
+<h1 class="display-4">{{answ}}</h1>
 {% else %}
-<h1>Drawing Has Not Been Guessed Correctly Yet</h1>
+<h1 class="display-4">Drawing Has Not Been Guessed Correctly Yet</h1>
 {% endif %}
+<hr>
+<div class="card" style="border-width: 5px; border-color: #90a4ae; width:600px;">
 <img src="{{link}}">
+</div>
+<h5>{{status}}</h5>
 <br>
-<h5>{{status}}</h5><br><br>
 {% if correctOrNot == False %}
-<p style="color:red;">Your Guess: {{response}}</p>
+<h5>Your Guess: {{response}}</h5><br><br>
 {% endif %}
+
+</center>
 {% endblock %}

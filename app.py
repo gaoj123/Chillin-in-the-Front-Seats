@@ -72,7 +72,7 @@ def notifications():
         return render_template("notifications.html", notis=notis, loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
-                                   
+
 
 #This is the gallery page
 @app.route('/gallery')
@@ -189,7 +189,7 @@ def guess():
         return render_template("guess.html", username=user, loggedin=loggedIn(), images=imgList)
     else:
         return redirect(url_for("login_page"))
-    
+
 #User chooses word to draw
 @app.route('/draw/new')
 def chooseWord():
@@ -219,7 +219,7 @@ def updatePFP():
 @app.route('/update/profilePic', methods=["POST"])
 def updateLink():
     if loggedIn():
-        url=request.form["link"]
+        url=request.form["pfp"]
         user=session["username"]
         users.update_pfp(user, url)
         users.add_notification_for(user, "You changed your profile picture", "/account/profile")
@@ -254,7 +254,7 @@ def score():
         user = session["username"]
         guesserResponse=request.form["guess"]
         correct=users.get_image(id)["word"]
-        correctOrNot = users.add_guess(user, id, guesserResponse) 
+        correctOrNot = users.add_guess(user, id, guesserResponse)
         guesses = users.get_image(id)["guesses"]
         time = ""
         for guess in guesses:

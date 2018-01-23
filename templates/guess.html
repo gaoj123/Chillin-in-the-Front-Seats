@@ -5,17 +5,38 @@ Guess
 {% endblock %}
 
 {% block body %}
+<center>
 {% if images == [] %}
-<br><br><h1>No drawings to guess at this time</h1>
+<h1 class="display-4">NO DRAWINGS TO GUESS AT THIS TIME :(</h1>
 {% else %}
-<br><br><h1>Guess Drawings</h1>
+<h1 class="display-4">GUESS DRAWINGS</h1>
+<br>
+<div class="container">
+
 {% for image in images %}
-{% set id = image["id"] %}
-{% set link = image["image"] %}
-<p><a href="/guess/choice?id={{id}}">
-<img src="{{link}}">
-</a>
-</p>
+<div class="row">
+  <div class="col-7">
+    <div class="card" style="width: 610px; border-width: 5px; border-color: #90a4ae; ">
+    {% set id = image["id"] %}
+    {% set link = image["image"] %}
+    <a href="/guess/choice?id={{id}}">
+        <img src="{{link}}">
+    </a>
+    </div>
+  </div>
+  <div class="col-5">
+    <div class="card" style="border-width: 5px; border-color: #cfd8dc; padding-top: 125px; padding-bottom: 125px; padding-left: 30px; padding-right: 30px;">
+    <a style="font-size: 50px; color: #90a4ae;">
+      Drawn by <br> {{ image["artist"] }}
+    </a>
+    </div>
+  </div>
+</div>
+<br>
 {% endfor %}
+
+</div>
 {% endif %}
+
+</center>
 {% endblock %}
