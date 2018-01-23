@@ -88,7 +88,7 @@ def gallery():
 def guessed():
     if loggedIn():
         user=session["username"]
-        return render_template("guessed.html", notis=draw.get_guessed_images(user), loggedin=loggedIn(), username=user)
+        return render_template("guessed.html", notis=get_guessed_images(user), loggedin=loggedIn(), username=user)
     else:
         return redirect(url_for("login_page"))
 
@@ -143,7 +143,7 @@ def profile_route():
 def guess():
     if loggedIn():
         user=session["username"]
-        imgList=draw.random_drawings(user, 5)
+        imgList=users.random_drawings(user, 5)
         return render_template("guess.html", username=user, loggedin=loggedIn(), images=imgList)
     else:
         return redirect(url_for("login_page"))
@@ -155,14 +155,15 @@ def chooseWord():
         wordChoices=[];
         while len(wordChoices)<5:
             word=random.choice(wordlist);
-            wordsChosenAlready=[]
-            for chosen in draw.get_images_by(user):
-                wordsChosenAlready.append(chosen["word"])
+            #wordsChosenAlready=[]
+            #for chosen in draw.get_images_by(user):
+                #wordsChosenAlready.append(chosen["word"])
             while len(wordChoices)<5:
                 word=random.choice(wordlist);
-                if word not in wordChoices and word not in wordsChosenAlready:
+                #if word not in wordChoices and word not in wordsChosenAlready:
+                if word not in wordChoices:
                     wordChoices.append(word)
-        return render_template("chooseWord.html", wordChosen=wordsChosenAlready, words=wordChoices, username=session["username"], loggedin=loggedIn())
+        return render_template("chooseWord.html", words=wordChoices, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
 
@@ -200,7 +201,7 @@ def draw():
 def choice():
     if loggedIn():
         ID=request.args["id"]
-        imageLink=draw.get_image(ID)["image"]
+        imageLink=users.get_image(ID)["image"]
         return render_template("guessChoice.html", id=ID, link=imageLink, username=session["username"], loggedin=loggedIn())
     else:
         return redirect(url_for("login_page"))
@@ -212,9 +213,9 @@ def score():
         id=request.form["id"];
         user = session["username"]
         guesserResponse=request.form["guess"]
-        correct=draw.get_image(id)["word"]
+        correct=users.get_image(id)["word"]
         correctOrNot = users.add_guess(user, id, guesserResponse) 
-        guesses = draw.get_image(id)["guesses"]
+        guesses = users.get_image(id)["guesses"]
         time = ""
         for guess in guesses:
             if guess["username"]==user:
@@ -233,7 +234,7 @@ def view():
     if loggedIn():
         id=request.args["id"]
         user=session["username"]
-        if draw.get_image(id)["solved"]==True:
+        if users.get_image(id)["solved"]==True:
             score="Score: "+str(users.get_dscore(id))
             correctGuesser=users.who_guessed_it(id)
             message=correctGuesser+" guessed your drawing correctly"
@@ -241,7 +242,7 @@ def view():
             message=""
             score=""
         numIncorrect=users.get_num_guesses(id)
-        image = draw.get_image(id)
+        image = users.get_image(id)
         if image['solved'] == False:
             return render_template("view.html", link=image["image"], word=image["word"], messageShown=message, scoreSolved=score, incorrectGuessesNum=numIncorrect, guesses=image["guesses"], username=user, loggedin=loggedIn())
         else:
