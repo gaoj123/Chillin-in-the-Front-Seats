@@ -22,7 +22,7 @@ def add_drawing(username, encoded_image, word):
 
 #Returns a dictionary with the following keys: image (encoded), word (what it is), artist (user who made it), id, solved (boolean) and guesses (a list of dictionaries; each dictionary has the keys username, guess, when and are sorted from earliest to last)
 def get_image(id):
-    if id == None:
+    if id == None or drawing_exists(id) == False:
         return {"image": "/static/missing.png", "word": "", "score": 0, "artist": "", "id": None, "guesses":[]}
     id = int(id)
     db = sqlite3.connect(db_name)
@@ -87,6 +87,18 @@ def get_images_of(word):
         result[index] = get_image(result[index][0])
         index += 1
     return result
+
+#Returns true or false depending on whether a drawing with this id exists
+def drawing_exists(id):
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    id = int(id)
+    result = c.execute("SELECT * FROM drawings WHERE id = %d;" % id).fetchone()
+    db.close()
+    if result:
+        return True
+    else:
+        return False
 
 #Given a tuple/list and a list of strings, will create a dictionary where the first key in the list corresponds to the first element in the tuple
 def tuple_to_dictionary(tuuple, list_of_keys):

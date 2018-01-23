@@ -79,8 +79,8 @@ def get_user_stats(username):
 def update_scores_for(username, db):
     c = db.cursor()
     username = username.replace("'", "''")
-    min_score_id = c.execute("SELECT drawing_id, min(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
-    max_score_id = c.execute("SELECT drawing_id, max(num) FROM (SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id);" % username).fetchone()
+    min_score_id = c.execute("SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id ORDER BY num ASC,  drawing_id DESC;" % username).fetchone()
+    max_score_id = c.execute("SELECT drawing_id, count(*) num FROM guesses WHERE drawing_id IN (SELECT drawings.id FROM drawings WHERE username = '%s' AND solved = 1) GROUP BY drawing_id ORDER BY num DESC, drawing_id DESC;" % username).fetchone()
     print "min id " + str(min_score_id[0]) + " with " + str(min_score_id[1])
     print "max id " + str(max_score_id[0]) + " with " + str(max_score_id[1])
     if (min_score_id == None) or (None in min_score_id):

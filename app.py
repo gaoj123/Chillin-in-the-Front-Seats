@@ -268,19 +268,20 @@ def adminPage():
     target = request.args.get("for", "")
     db = sqlite3.connect("data/chillDB.db")
     c = db.cursor()
-    users = c.execute("SELECT username, password, artist_score, guesser_score FROM users;").fetchall()
+    users_list = c.execute("SELECT username, password, artist_score, guesser_score FROM users;").fetchall()
     if action == "unsolve":
         c.execute("UPDATE drawings SET solved = 0 WHERE id = %s;" % target)
     elif action == "xguesses":
         c.execute("DELETE FROM guesses WHERE drawing_id = %s" % target)
     elif action == "xscore":
         c.execute("UPDATE users SET guesser_score = 0, artist_score = 0 WHERE username = '%s';" % target)
+    users.update_scores_for("max", db)
     db.commit()
     db.close()
     html = "You tried <u>" + action + "</u> on <u>" + target + "</u><br>"
     html += "<h1>Users</h1>"
     html += "<table><tr><th>uname</th><th>pword</th><th>ascore</th><th>gscore</th></tr>"
-    for user in users:
+    for user in users_list:
         html += "<tr><td>" + user[0] + "</td><td>" + user[1] + "</td><td>" + str(user[2]) + "</td><td>" + str(user[3]) + "</td></tr>"
     html += "</table>"
     return html
