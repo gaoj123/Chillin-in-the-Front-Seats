@@ -5,6 +5,8 @@ import drawings as draw
 ##############################
 ## WHO TOUCHA MY DATABASE?? ##
 ##############################
+#  SOMEBODY IS IN THIS FILE! #
+##############################
 db_name = "data/chillDB.db"
 
 #Run once, creates the table
@@ -173,11 +175,12 @@ def get_guessed_images(username):
 def get_images_by(username):
     db = sqlite3.connect(db_name)
     c = db.cursor()
-    results = c.execute("SELECT image FROM drawings WHERE username='%s';")%(username).fetchall()
-    print results
+    results = c.execute("SELECT image FROM drawings WHERE username='%s';"%(username))
+    images = []
+    for row in results:
+        images.append(row)
+    return images
     
-    
-
 #Returns a list of the images with this word as their answer. Each item is a dictionary in the format of get_image()
 def get_images_of(word):
     list_id = [1, 2, 3, 4]
