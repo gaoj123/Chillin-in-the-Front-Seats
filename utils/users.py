@@ -165,11 +165,14 @@ def random_drawings(username, count):
 
 #Returns a list of the images the user has guessed on, wrong and correct. Each item is a dictionary like get_image()
 def get_guessed_images(username):
-    list_id = [1, 2, 3, 4]
-    list_drawings = []
-    for id in list_id:
-        list_drawings.append(get_image(id))
-    return list_drawings
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    results = c.execute("SELECT drawing_id, guess, timestamp FROM guesses WHERE username='%s';"%(username))
+    images = []
+    for row in results:
+        image_dict = tuple_to_dictionary(row, ["drawing_id", "guess", "timestamp"])
+        images.append(image_dict)
+    return images
 
 #Returns a list of the images the user has drawn. Each item is a dictionary in the format of get_image()
 def get_images_by(username):
@@ -184,12 +187,14 @@ def get_images_by(username):
     
 #Returns a list of the images with this word as their answer. Each item is a dictionary in the format of get_image()
 def get_images_of(word):
-    list_id = [1, 2, 3, 4]
-    list_drawings = []
-    for id in list_id:
-        list_drawings.append(get_image(id))
-    return list_drawings
-
+    db = sqlite3.connect(db_name)
+    c = db.cursor()
+    results = c.execute("SELECT image, word, id, solved FROM drawings WHERE word='%s';"%(word))
+    images = []
+    for row in results:
+        image_dict = tuple_to_dictionary(row, ["image", "word", "id", "solved"])
+        images.append(image_dict)
+    return images
 
 ###################
 ## NOTIFICATIONS ##
