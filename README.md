@@ -5,7 +5,16 @@ Period 9 <br>
 Drawnet is a website where users can play a game similar to Pictionary.  Users have two options: guess other users’ drawings or create their own drawings.  To draw, users first choose what they want to draw from a list of nouns.  They are then led to a canvas - program like Paint - where they draw the object they chose and submit that drawing to be guessed by others.  Drawers will receive notifications regarding other people’s guesses of their drawings.  For the drawer, the drawing is scored as follows: 20 - n (where “n” is the number of guessers who guessed the user’s drawing incorrectly); after all, the quicker the drawing is guessed correctly, the better the quality of the user’s drawing. If the guesser guesses a drawing correctly, the guesser gets 5 points. Thus, each user has two overall scores, as a guesser and as a drawer.   <br><br>
 [Video](https://www.youtube.com/)
 
-### Instructions
+### Run Instructions 
+In terminal:
+```
+$ git clone https://github.com/gaoj123/Chillin-in-the-Front-Seats.git
+$ cd Chillin-in-the-Front-Seats
+$ python app.py
+```
+then go to `localhost:5000` in any browser.
+
+### Play Instructions
 * Create an account and log in.  
 * You'll be able to create drawings.  On the canvas, there is a color picker, fill bucket, dropper, a color replacer, a scale to adjust brush thickness, and an option to recolor the entire canvas. After submitting your drawing, other users will guess your drawing.  You will then get notifications regarding whether they guessed correctly and what their guesses were.  Once your drawing has been solved, it will be marked as solved and will not be guessed by other users.
 * Moreover, you can also guess other users' drawings.  The "Guess" page shows several drawings by other users (will say none available if others have not created drawings).  Clicking on a drawing brings you to a page where you can type what you think the object is into a text field.  Upon submission, you will know whether you guessed correctly or not (+5 points to your "Guesser Score" if correct).  
@@ -24,3 +33,11 @@ Our system does not allow for synonyms and singular/plural variants of the answe
 You can log onto these pre-existing accounts: <br>
 Usernames: dw, max, wsoe, jen, kli16<br>
 Password: 123 (for all accounts)
+
+| Username           | Password |
+|--------------------|----------|
+| `dw`               | 123      | 
+| `max`              | 123      |
+| `wsoe`             | 123      |
+| `jen `             | 123      |
+| `kli16`            | 123      |
