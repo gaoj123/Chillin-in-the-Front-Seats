@@ -91,5 +91,17 @@ Worked on guess and notifications routes and did Jinja/HTML.  These are currentl
 gaoJ -- 2018-01-22 10:55
 Fixed profile's best/worst image score to address all cases of "N/A".  Also modified what's displayed on the page when a user clicks on a notification to show the same message.  In addition, time is now included in notifications.
 
+liK -- 2018-01-22 20:05
+Continued working on CSSing pages
+
 gaoJ -- 2018 01-23 12:03
 Fixed gallery and guessed images routes/HTML files.  Also modified view.html so that the word only appears as a heading if it has been solved.  Uploaded new design document with updated site map.
+
+liK -- 2018-01-23 15:00
+Finished updating all HTML pages and adding bootstrap and CSS.
+
+liK, zlotiskyM, soeW, GaoJ -- 2018-01-23 16:00
+Filmed and narrated video tutorial.
+
+liK -- 2018-01-24 7:30
+Finalized Video and added link, added run instructions to README.md
